@@ -8,10 +8,9 @@ using namespace sf;
 struct NodeObject
 {
     Text text;
-    Font font;
     CircleShape shape;
 
-    NodeObject()
+    NodeObject(Font &font)
     {
         float r = 100.f;
         shape.setRadius(r);
@@ -20,8 +19,6 @@ struct NodeObject
         shape.setFillColor(Color::Blue);
         shape.setOutlineThickness(-4.f);
         shape.setOutlineColor(Color::Red);
-
-        font.loadFromFile("assets/fonts/font2.ttf");
 
         text.setFont(font);
         text.setCharacterSize(72);
@@ -48,35 +45,39 @@ struct NodeObject
     }
 };
 
+ostream &operator<<(ostream &out, NodeObject &obj)
+{
+    string s = obj.text.getString();
+    return out << s;
+}
+
 struct LinkedListVisualizer
 {
-    DoublyLinkedCircularList<NodeObject> nodes;
+    Font font;
+    LinkedList<NodeObject *> *nodes;
+
+    LinkedListVisualizer()
+    {
+        font.loadFromFile("assets/fonts/font2.ttf");
+        nodes = new LinkedList<NodeObject *>;
+    }
 
     void add_node(int data)
     {
-        nodes.print();
-        int i = nodes.getLength();
-        cout << i << endl;
-
-        NodeObject obj;
-        obj.setText(to_string(data));
-        obj.setPos(i * 200 + 100, 100);
-
-        nodes.append(obj);
+        NodeObject *obj = new NodeObject(font);
+        int i = nodes->getLength();
+        obj->setText(to_string(data));
+        obj->setPos(i * 300 + 150, 150);
+        nodes->append(obj);
     }
 
     void visualize(RenderWindow &win)
     {
-        if (!nodes.isEmpty())
+        ListNode<NodeObject *> *cur = nodes->getHead();
+        while (cur != nullptr)
         {
-            cout << "here 1\n";
-            ListNode<NodeObject> *cur = nodes.getHead();
-            do
-            {
-                cout << "here 2\n";
-                cur->data.draw(win);
-                cur = cur->next;
-            } while (cur != nodes.getHead());
+            cur->data->draw(win);
+            cur = cur->next;
         }
     }
 };
@@ -89,19 +90,14 @@ void foo()
     LinkedListVisualizer viz;
 
     for (int i = 0; i < 25; i++)
-    {
-        cout << "here " << i << "\n";
-        viz.add_node(i * 10);
-    }
+        viz.add_node((i + 1) * 10);
 
     while (window.isOpen())
     {
         Event event;
         while (window.pollEvent(event))
-        {
             if (event.type == Event::Closed)
                 window.close();
-        }
 
         window.clear(Color::Black);
         viz.visualize(window);
