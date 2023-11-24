@@ -1,4 +1,4 @@
-#include "Data Structures.h"
+#include "Dependencies/Structures.h"
 
 void testDynamicSafeArray()
 {
@@ -31,6 +31,17 @@ void testDoublyLinkedCircularList()
 
     list.print();
     list.printReverse();
+}
+
+void linkedListTest2()
+{
+    DoublyLinkedCircularList<int> list;
+
+    for (int i = 5; i < 10; i++)
+    {
+        list.append(i);
+        list.print();
+    }
 }
 
 void testStack()
@@ -80,7 +91,7 @@ void testAVLTree()
 
 int main()
 {
-    testAVLTree();
+    linkedListTest2();
 
     return 0;
 }

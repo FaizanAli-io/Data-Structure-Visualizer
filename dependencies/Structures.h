@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 using namespace std;
 
@@ -94,6 +95,8 @@ public:
 
     inline bool isEmpty() { return !head && !tail; }
 
+    ListNode<T> *getHead() { return head; }
+
     void append(T data)
     {
         ListNode<T> *newNode = new ListNode<T>(data, head, tail);
@@ -126,6 +129,7 @@ public:
             head = head->next;
             return temp;
         }
+        return T();
     }
 
     T removeTail()
@@ -138,6 +142,22 @@ public:
             tail = tail->prev;
             return temp;
         }
+        return T();
+    }
+
+    int getLength()
+    {
+        int size = 0;
+        if (!isEmpty())
+        {
+            ListNode<T> *cur = head;
+            do
+            {
+                size++;
+                cur = cur->next;
+            } while (cur != head);
+        }
+        return size;
     }
 
     void print()
@@ -197,6 +217,7 @@ public:
             top = top->next;
             return data;
         }
+        return T();
     }
 
     T peek()
@@ -247,6 +268,7 @@ public:
             rear = rear->next;
             return data;
         }
+        return T();
     }
 
     T peek()

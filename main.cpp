@@ -1,4 +1,4 @@
-#include "Graphic Objects/LinkedList.h"
+#include "Dependencies/LinkedList.h"
 
 int main()
 {
