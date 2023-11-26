@@ -1,4 +1,4 @@
-#include "Data Structures.h"
+#include "Dependencies/Structures.h"
 
 void testDynamicSafeArray()
 {
@@ -13,51 +13,38 @@ void testDynamicSafeArray()
     arr.print();
 }
 
-void testDoublyLinkedCircularList()
-{
-    DoublyLinkedCircularList<int> list;
-
-    for (int i = 0; i < 10; i++)
-        list.append(i);
-
-    for (int i = 0; i > -10; i--)
-        list.prepend(i);
-
-    for (int i = 0; i < 3; i++)
-        list.removeHead();
-
-    for (int i = 0; i < 3; i++)
-        list.removeTail();
-
-    list.print();
-    list.printReverse();
-}
-
 void testStack()
 {
     Stack<int> stack;
 
     for (int i = 0; i < 10; i++)
+    {       
         stack.push(i);
+        stack.print();
+    }
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 10; i++)
+    {        
         stack.pop();
-
-    stack.print();
+        stack.print();
+    }
 }
 
 void testQueue()
 {
     Queue<int> queue;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
+    {       
         queue.enqueue(i);
+        queue.print();
+    }
 
-    for (int i = 0; i < 50; i++)
-        cout << queue.dequeue() << ", ";
-    cout << endl;
-
-    queue.print();
+    for (int i = 0; i < 10; i++)
+    {        
+        queue.dequeue();
+        queue.print();
+    }
 }
 
 void testAVLTree()
@@ -80,7 +67,11 @@ void testAVLTree()
 
 int main()
 {
-    testAVLTree();
+    testStack();
+    cout << endl;
+
+    testQueue();
+    cout << endl;
 
     return 0;
 }

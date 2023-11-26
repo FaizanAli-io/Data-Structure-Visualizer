@@ -1,27 +1,7 @@
+#include <cstdlib>
 #include <iostream>
 using namespace std;
 
-template <typename T>
-struct ListNode
-{
-    T data;
-    ListNode<T> *next;
-    ListNode<T> *prev;
-
-    ListNode(T data, ListNode<T> *next = nullptr, ListNode<T> *prev = nullptr)
-        : data(data), next(next), prev(prev) {}
-};
-
-template <typename T>
-struct TreeNode
-{
-    T data;
-    TreeNode<T> *left;
-    TreeNode<T> *right;
-
-    TreeNode(T data, TreeNode<T> *left = nullptr, TreeNode<T> *right = nullptr)
-        : data(data), left(left), right(right) {}
-};
 
 template <typename T>
 class DynamicSafeArray
@@ -83,20 +63,47 @@ public:
     }
 };
 
+
 template <typename T>
-class DoublyLinkedCircularList
+struct ListNode
 {
+    T data;
+    ListNode<T> *next;
+
+    ListNode(T data, ListNode<T> *next = nullptr) 
+        : data(data), next(next) {}
+};
+
+
+template <typename T>
+struct TreeNode
+{
+    T data;
+    TreeNode<T> *left;
+    TreeNode<T> *right;
+
+    TreeNode(T data, TreeNode<T> *left = nullptr, TreeNode<T> *right = nullptr)
+        : data(data), left(left), right(right) {}
+};
+
+
+template <typename T>
+class LinkedList
+{
+protected:
     ListNode<T> *head;
     ListNode<T> *tail;
 
 public:
-    DoublyLinkedCircularList() : head(nullptr), tail(nullptr) {}
+    LinkedList() : head(nullptr), tail(nullptr) {}
 
-    inline bool isEmpty() { return !head && !tail; }
+    inline bool isEmpty() { return head == nullptr; }
+
+    ListNode<T> *getHead() { return head; }
 
     void append(T data)
     {
-        ListNode<T> *newNode = new ListNode<T>(data, head, tail);
+        ListNode<T> *newNode = new ListNode<T>(data);
 
         if (isEmpty())
             head = newNode;
@@ -107,165 +114,62 @@ public:
 
     void prepend(T data)
     {
-        ListNode<T> *newNode = new ListNode<T>(data, head, tail);
+        ListNode<T> *newNode = new ListNode<T>(data);
 
         if (isEmpty())
             tail = newNode;
         else
-            head->prev = newNode;
+            newNode->next = head;
         head = newNode;
     }
 
     T removeHead()
     {
-        if (!isEmpty())
-        {
-            head->prev->next = head->next;
-            head->next->prev = head->prev;
-            T temp = head->data;
-            head = head->next;
-            return temp;
-        }
+        T temp = head->data;
+        head = head->next;
+        return temp;
     }
 
-    T removeTail()
+    int getLength()
     {
-        if (!isEmpty())
-        {
-            tail->prev->next = tail->next;
-            tail->next->prev = tail->prev;
-            T temp = tail->data;
-            tail = tail->prev;
-            return temp;
-        }
+        int size = 0;
+        for (ListNode<T> *cur = head; cur != nullptr; cur = cur->next)
+            size++;
+        return size;
     }
 
     void print()
     {
-        if (!isEmpty())
-        {
-            ListNode<T> *cur = head;
-            do
-            {
-                cout << cur->data << " -> ";
-                cur = cur->next;
-            } while (cur != head);
-            cout << "NULL" << endl;
-        }
-        else
-            cout << "List is Empty...\n";
-    }
-
-    void printReverse()
-    {
-        if (!isEmpty())
-        {
-            ListNode<T> *cur = tail;
-            do
-            {
-                cout << cur->data << " -> ";
-                cur = cur->prev;
-            } while (cur != tail);
-            cout << "NULL" << endl;
-        }
-        else
-            cout << "List is Empty...\n";
-    }
-};
-
-template <typename T>
-class Stack
-{
-    ListNode<T> *top;
-
-public:
-    Stack() : top(nullptr) {}
-
-    inline bool isEmpty() { return top == nullptr; }
-
-    void push(T data)
-    {
-        ListNode<T> *newNode = new ListNode<T>(data, top);
-        top = newNode;
-    }
-
-    T pop()
-    {
-        if (!isEmpty())
-        {
-            T data = top->data;
-            top = top->next;
-            return data;
-        }
-    }
-
-    T peek()
-    {
-        if (!isEmpty())
-            return top->data;
-    }
-
-    void print()
-    {
-        ListNode<T> *cur = top;
-        while (cur != nullptr)
-        {
+        for (ListNode<T> *cur = head; cur != nullptr; cur = cur->next)
             cout << cur->data << " -> ";
-            cur = cur->next;
-        }
         cout << "NULL" << endl;
     }
 };
 
+
 template <typename T>
-class Queue
+class Stack : public LinkedList<T>
 {
-    ListNode<T> *front;
-    ListNode<T> *rear;
-
 public:
-    Queue() : front(nullptr), rear(nullptr) {}
+    void push(T data) { LinkedList<T>::prepend(data); }
 
-    inline bool isEmpty() { return rear == nullptr; }
+    T pop() { return LinkedList<T>::removeHead(); }
 
-    void enqueue(T data)
-    {
-        ListNode<T> *newNode = new ListNode<T>(data);
-
-        if (isEmpty())
-            rear = newNode;
-        else
-            front->next = newNode;
-        front = newNode;
-    }
-
-    T dequeue()
-    {
-        if (!isEmpty())
-        {
-            T data = rear->data;
-            rear = rear->next;
-            return data;
-        }
-    }
-
-    T peek()
-    {
-        if (!isEmpty())
-            return rear->data;
-    }
-
-    void print()
-    {
-        ListNode<T> *cur = rear;
-        while (cur != nullptr)
-        {
-            cout << cur->data << " -> ";
-            cur = cur->next;
-        }
-        cout << "NULL" << endl;
-    }
+    T peek() { return LinkedList<T>::tail->data; }
 };
+
+
+template <typename T>
+class Queue : public LinkedList<T>
+{
+public:
+    void enqueue(T data) { LinkedList<T>::append(data); }
+
+    T dequeue() { return LinkedList<T>::removeHead(); }
+
+    T peek() { return LinkedList<T>::head->data; }
+};
+
 
 template <typename T>
 struct AVLTree
