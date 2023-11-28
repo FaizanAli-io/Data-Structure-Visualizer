@@ -2,132 +2,48 @@
 using namespace sf;
 
 #include "Structures.h"
-#include "Utilities.h"
+#include "GraphicObjects.h"
 
-#ifndef CLASS
-#define CLASS
-
-struct Arrow
-{
-    RectangleShape line;
-    CircleShape triangle;
-
-    Arrow()
-    {
-        float r = 30.f;
-        triangle.setRadius(r);
-        triangle.setOrigin(r, r);
-        triangle.setPointCount(3);
-        triangle.setOutlineThickness(-3.f);
-
-        line.setFillColor(Color(0, 255, 0));
-        triangle.setFillColor(Color(0, 255, 0));
-        triangle.setOutlineColor(Color(255, 255, 0));
-    }
-
-    void set(Vector2f beg, Vector2f end)
-    {
-        Vector2f dirVector = (end - beg) * 0.6f;
-        float arrowLength = magnitude(dirVector.x, dirVector.y);
-        int angleBetween = angleInDegrees(dirVector.x, dirVector.y);
-
-        line.setPosition(beg);
-        triangle.setPosition(beg + dirVector);
-        line.setSize(Vector2f(arrowLength, 6.f));
-
-        line.setRotation(angleBetween);
-        triangle.setRotation(angleBetween + 90);
-    }
-
-    void draw(RenderWindow &win)
-    {
-        win.draw(line);
-        win.draw(triangle);
-    }
-};
-
-struct NodeObject
-{
-    Text text;
-    Arrow pointer;
-    CircleShape shape;
-
-    NodeObject(Font &font)
-    {
-        float r = 80.f;
-        shape.setRadius(r);
-        shape.setOrigin(r, r);
-        shape.setPointCount(100);
-        shape.setOutlineThickness(-4.f);
-        shape.setFillColor(Color(0, 0, 255));
-        shape.setOutlineColor(Color(255, 0, 0));
-
-        text.setFont(font);
-        text.setCharacterSize(72);
-        text.setFillColor(Color(255, 0, 255));
-    }
-
-    void setText(string value)
-    {
-        text.setString(value);
-
-        Vector2f textSize = text.getGlobalBounds().getSize();
-        text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
-    }
-
-    void setPos(int x, int y)
-    {
-        shape.setPosition(x, y);
-        text.setPosition(x, y);
-    }
-
-    void setArrow(Vector2f dst)
-    {
-        Vector2f src = shape.getPosition();
-        pointer.set(src, dst);
-    }
-
-    void setAllAlpha(int i)
-    {
-        Color col = shape.getFillColor();
-        col.a = i;
-        shape.setFillColor(col);
-
-        col = shape.getOutlineColor();
-        col.a = i;
-        shape.setOutlineColor(col);
-
-        col = text.getFillColor();
-        col.a = i;
-        text.setFillColor(col);
-    }
-
-    void draw(RenderWindow &win)
-    {
-        pointer.draw(win);
-        win.draw(shape);
-        win.draw(text);
-    }
-};
-
-ostream &operator<<(ostream &out, NodeObject &obj)
-{
-    string s = obj.text.getString();
-    return out << s;
-}
+#ifndef LINKEDLIST
+#define LINKEDLIST
 
 struct LinkedListVisualizer
 {
     Font font;
     Clock clock;
+    RenderWindow *window;
     NodeObject *lastNode;
+    Button *b1, *b2, *b3, *b4;
     LinkedList<NodeObject *> *nodes;
 
-    LinkedListVisualizer()
+    LinkedListVisualizer(RenderWindow *win)
     {
         font.loadFromFile("assets/fonts/font2.ttf");
         nodes = new LinkedList<NodeObject *>;
         lastNode = nullptr;
+        window = win;
+
+        b1 = new Button(font);
+        b1->setText("Append");
+        b1->setPos(1400, 100);
+
+        b2 = new Button(font);
+        b2->setText("Prepend");
+        b2->setPos(1400, 325);
+
+        b3 = new Button(font);
+        b3->setText("Pop Tail");
+        b3->setPos(1400, 550);
+
+        b4 = new Button(font);
+        b4->setText("Pop Head");
+        b4->setPos(1400, 775);
+    }
+
+    void randomNodes(int n, int m = 1000)
+    {
+        for (int i = 0; i < n; i++)
+            add_node(rand() % m);
     }
 
     NodeObject *add_node(int data)
@@ -152,7 +68,7 @@ struct LinkedListVisualizer
         return obj;
     }
 
-    void add_node_viz(int data, RenderWindow &win)
+    void add_node_viz(int data)
     {
         NodeObject *obj = add_node(data);
 
@@ -166,13 +82,13 @@ struct LinkedListVisualizer
                 obj->setAllAlpha(i);
             }
 
-            win.clear();
-            visualize(win);
-            win.display();
+            window->clear();
+            visualize();
+            window->display();
         }
     }
 
-    void del_tail_viz(RenderWindow &win)
+    void del_tail_viz()
     {
         NodeObject *obj = nodes->getTail()->data;
 
@@ -186,9 +102,9 @@ struct LinkedListVisualizer
                 obj->setAllAlpha(i);
             }
 
-            win.clear();
-            visualize(win);
-            win.display();
+            window->clear();
+            visualize();
+            window->display();
         }
 
         nodes->removeTail();
@@ -197,53 +113,64 @@ struct LinkedListVisualizer
         lastNode = obj;
     }
 
-    void visualize(RenderWindow &win)
+    void buttonClicked(int x, int y)
+    {
+        if (b1->isOverlap(x, y))
+            add_node_viz(rand() % 500 - 500);
+
+        else if (b2->isOverlap(x, y))
+            cout << "B2 Pressed" << endl;
+
+        else if (b3->isOverlap(x, y))
+            del_tail_viz();
+
+        else if (b4->isOverlap(x, y))
+            cout << "B4 Pressed" << endl;
+    }
+
+    void visualize()
     {
         ListNode<NodeObject *> *cur = nodes->getHead();
         while (cur != nullptr)
         {
-            cur->data->draw(win);
+            cur->data->draw(window);
             cur = cur->next;
         }
+
+        b1->draw(window);
+        b2->draw(window);
+        b3->draw(window);
+        b4->draw(window);
     }
 };
 
 void foo()
 {
 
-    RenderWindow window(VideoMode(1600, 900), "Linked List");
+    RenderWindow *window = new RenderWindow(VideoMode(1600, 900), "Linked List");
 
-    LinkedListVisualizer viz;
+    LinkedListVisualizer *visualizer = new LinkedListVisualizer(window);
 
-    for (int i = 0; i < 12; i++)
-        viz.add_node(rand() % 1000);
+    visualizer->randomNodes(12);
 
-    while (window.isOpen())
+    while (window->isOpen())
     {
         Event event;
-        while (window.pollEvent(event))
+        while (window->pollEvent(event))
         {
-            switch (event.type)
+            if (event.type == Event::Closed)
+                window->close();
+
+            else if (event.type == Event::MouseButtonPressed)
             {
-            case Event::Closed:
-                window.close();
-                break;
-
-            case Event::KeyPressed:
-                if (Keyboard::isKeyPressed(Keyboard::Return))
-                    viz.add_node_viz(rand() % 1000, window);
-                if (Keyboard::isKeyPressed(Keyboard::BackSpace))
-                    viz.del_tail_viz(window);
-                break;
-
-            default:
-                break;
+                Vector2i pos = Mouse::getPosition();
+                visualizer->buttonClicked(pos.x, pos.y);
             }
         }
 
-        window.clear(Color(0, 0, 0));
-        viz.visualize(window);
-        window.display();
+        window->clear(Color(0, 0, 0));
+        visualizer->visualize();
+        window->display();
     }
 }
 
