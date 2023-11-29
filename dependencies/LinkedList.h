@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <memory>
 using namespace sf;
 
 #include "Structures.h"

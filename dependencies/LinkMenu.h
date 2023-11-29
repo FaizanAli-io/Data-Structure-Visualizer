@@ -1,24 +1,17 @@
-/*
-*	Copyright (C) 2016 Sidhin S Thomas
-*
-*	This software is licensed under the MIT License
-*/
-
 #ifndef SS_USER_INTERFACE
 #define SS_USER_INTERFACE
 
-
-/*--- Headers ---*/
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <memory>
-namespace gmenu {
 
-	
+namespace gmenu
+{
+
 	/* Simple abstract class interface to implement Actions */
-	class Action {
+	class Action
+	{
 	public:
-  	    
-    
 		/* The function that will be called by the menu
 		Depending on the return value of start() the menu will close
 		- If start() return true : menu will not close
@@ -30,13 +23,15 @@ namespace gmenu {
 		virtual bool start() = 0;
 	};
 
-	struct MenuItem {
+	struct MenuItem
+	{
 		std::shared_ptr<Action> action;
 		std::string title;
 	};
 
 	/* BitFlags for Different possible Layouts */
-	enum Layout {
+	enum Layout
+	{
 
 		TitleCentre = 1 << 0,
 		TitleRight = 1 << 1,
@@ -47,52 +42,51 @@ namespace gmenu {
 		ItemLeft = 1 << 5,
 
 		Default = TitleCentre | ItemCentre,
-					  
+
 	};
 
 	/* Defines the style of the menu */
-	struct Style {
+	struct Style
+	{
 		sf::Font &TitleFont;
 		sf::Font &ItemFont;
 
-		sf::Color TitleColor = sf::Color::Green;;
-		sf::Color ItemColor = sf::Color::Red ;
+		sf::Color TitleColor = sf::Color::Green;
+		;
+		sf::Color ItemColor = sf::Color::Red;
 		sf::Color Selected = sf::Color::Blue;
 
-		unsigned int TitleFontSize = 50;
-		unsigned int ItemFontSize = 20;
+		unsigned int TitleFontSize = 320;
+		unsigned int ItemFontSize = 80;
 
-		float MenuTitleScaleFactor = 1.25;
+		float MenuTitleScaleFactor = 0.25;
 		float MenuItemScaleFactor = 0.25;
 
-		struct {
+		struct
+		{
 			signed int top, left;
 		} PaddingItems, PaddingTitle;
 
 		int layout = Layout::Default;
-		Style(sf::Font &mf, sf::Font &itmf):
-			TitleFont( mf ), ItemFont( itmf ), PaddingTitle {10,0}, PaddingItems {0,0}
-		{	
+		Style(sf::Font &mf, sf::Font &itmf) : TitleFont(mf), ItemFont(itmf), PaddingTitle{10, 0}, PaddingItems{0, 0}
+		{
 		}
 	};
 
-
-	
-	
-	class Menu {
+	class Menu
+	{
 		/* Generic Menu - can be instantiated to generate a custom menu as needed over a sf::RenderWindow */
 
 	public:
-		
 		/* Only available constructor */
-		Menu(sf::RenderWindow &wnd, std::string title, std::vector<MenuItem> items, Style &st):
-			style( st ), window (wnd) {
+		Menu(sf::RenderWindow &wnd, std::string title, std::vector<MenuItem> items, Style &st) : style(st), window(wnd)
+		{
 			menuTitle = title;
 			menuItems = items;
 		}
 
-	    /* This method is will start the menu and handover the screen control to it.
-		The Event loop will be controlled by this function after the call, and 
+		/* This method is will start the menu and handover the screen control to it.
+		The Event loop will be controlled by this function after the call, and
 		only after Back/exit on the menu will the control be returned.
 
 		The control is returned when an "gmenu::Action" object is called
@@ -100,74 +94,83 @@ namespace gmenu {
 		void createMenu();
 
 		/* In case menu items needs to be changed */
-		void setMenuItems( std::vector<MenuItem> );
-		
+		void setMenuItems(std::vector<MenuItem>);
+
 		/* In case the title needs to be changed */
 		void setTitle(std::string title);
-		
 
 	private:
-		
-
-		void writeText( std::string string, sf::Font font, unsigned int size, float x, float y,
-			const sf::Color &color);
+		void writeText(std::string string, sf::Font font, unsigned int size, float x, float y,
+					   const sf::Color &color);
 
 		void setMenu();
 
 		void drawMenu();
 
-
 		/*==================================================*
-		*				Internal structuers        			*
-		*===================================================*/
+		 *				Internal structuers        			*
+		 *===================================================*/
 
 		std::vector<MenuItem> menuItems;
 
-		struct coordinates {
+		struct coordinates
+		{
 			float x = 0;
 			float y = 0;
-		}  title_location;
+		} title_location;
 		std::vector<coordinates> item_location;
 
 		/*==================================================*
-		*					Data Members					*
-		*===================================================*/
+		 *					Data Members					*
+		 *===================================================*/
 
 		int currently_selected_item = 0;
 
 		Style &style;
-		
+
 		sf::RenderWindow &window;
-		std::string menuTitle;		
+		std::string menuTitle;
 
 	}; // Menu
 
-
 	/*==================================================*
-	*				Operator overload					*
-	*===================================================*/
-	template<class T> inline T operator~ ( T a ) {
-		return (T) ~(int) a;
+	 *				Operator overload					*
+	 *===================================================*/
+	template <class T>
+	inline T operator~(T a)
+	{
+		return (T) ~(int)a;
 	}
-	template<class T> inline T operator| ( T a, T b ) {
-		return (T) ((int) a | (int) b);
+	template <class T>
+	inline T operator|(T a, T b)
+	{
+		return (T)((int)a | (int)b);
 	}
-	template<class T> inline T operator& ( T a, T b ) {
-		return (T) ((int) a & (int) b);
+	template <class T>
+	inline T operator&(T a, T b)
+	{
+		return (T)((int)a & (int)b);
 	}
-	template<class T> inline T operator^ ( T a, T b ) {
-		return (T) ((int) a ^ (int) b);
+	template <class T>
+	inline T operator^(T a, T b)
+	{
+		return (T)((int)a ^ (int)b);
 	}
-	template<class T> inline T& operator|= ( T& a, T b ) {
-		return (T&) ((int&) a |= (int) b);
+	template <class T>
+	inline T &operator|=(T &a, T b)
+	{
+		return (T &)((int &)a |= (int)b);
 	}
-	template<class T> inline T& operator&= ( T& a, T b ) {
-		return (T&) ((int&) a &= (int) b);
+	template <class T>
+	inline T &operator&=(T &a, T b)
+	{
+		return (T &)((int &)a &= (int)b);
 	}
-	template<class T> inline T& operator^= ( T& a, T b ) {
-		return (T&) ((int&) a ^= (int) b);
+	template <class T>
+	inline T &operator^=(T &a, T b)
+	{
+		return (T &)((int &)a ^= (int)b);
 	}
-
 
 } // namespace gmenu
 
