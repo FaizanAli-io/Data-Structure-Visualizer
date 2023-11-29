@@ -4,5 +4,8 @@
 int main()
 {
 	srand(time(0));
+
+	// mainMenuFunc();
+
 	foo();
 }
