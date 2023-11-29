@@ -34,3 +34,4 @@
 # Project Specific
 run/
 src/
+.vscode/
