@@ -2,166 +2,259 @@
 using namespace sf;
 
 #include "Structures.h"
-#include "Utilities.h"
+#include "GraphicObjects.h"
 
-#ifndef CLASS
-#define CLASS
-
-struct Arrow
-{
-    RectangleShape line;
-    CircleShape triangle;
-
-    void set(Vector2f beg, Vector2f end)
-    {
-        Vector2f dirVector = (end - beg) * 0.6f;
-        int angleBetween = angleInDegrees(dirVector.x, dirVector.y);
-        float arrowLength = magnitude(dirVector.x, dirVector.y);
-
-        line.setPosition(beg);
-        line.setFillColor(Color::Green);
-        line.setSize(Vector2f(arrowLength, 8.f));
-
-        float r = 40.f;
-        triangle.setRadius(r);
-        triangle.setOrigin(r, r);
-        triangle.setPointCount(3);
-        triangle.setOutlineThickness(-4.f);
-        triangle.setFillColor(Color::Green);
-        triangle.setOutlineColor(Color::Yellow);
-        triangle.setPosition(beg + dirVector);
-
-        line.rotate(angleBetween);
-        triangle.rotate(angleBetween + 90);
-    }
-
-    void draw(RenderWindow &win)
-    {
-        win.draw(line);
-        win.draw(triangle);
-    }
-};
-
-struct NodeObject
-{
-    Text text;
-    Arrow pointer;
-    CircleShape shape;
-
-    NodeObject(Font &font)
-    {
-        float r = 100.f;
-        shape.setRadius(r);
-        shape.setOrigin(r, r);
-        shape.setPointCount(100);
-        shape.setOutlineThickness(-4.f);
-        shape.setFillColor(Color::Blue);
-        shape.setOutlineColor(Color::Red);
-
-        text.setFont(font);
-        text.setCharacterSize(72);
-        text.setFillColor(Color::Magenta);
-    }
-
-    void setText(string value)
-    {
-        text.setString(value);
-
-        Vector2f textSize = text.getGlobalBounds().getSize();
-        text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
-    }
-
-    void setPos(int x, int y)
-    {
-        shape.setPosition(x, y);
-        text.setPosition(x, y);
-    }
-
-    void setArrow(Vector2f dst)
-    {
-        Vector2f src = shape.getPosition();
-        pointer.set(src, dst);
-    }
-
-    void draw(RenderWindow &win)
-    {
-        pointer.draw(win);
-        win.draw(shape);
-        win.draw(text);
-    }
-};
-
-ostream &operator<<(ostream &out, NodeObject &obj)
-{
-    string s = obj.text.getString();
-    return out << s;
-}
+#ifndef LINKEDLIST
+#define LINKEDLIST
 
 struct LinkedListVisualizer
 {
     Font font;
-    NodeObject *lastNode;
+    Clock clock;
+    RenderWindow *window;
+    Button *b1, *b2, *b3, *b4;
     LinkedList<NodeObject *> *nodes;
 
-    LinkedListVisualizer()
+    LinkedListVisualizer(RenderWindow *win)
     {
         font.loadFromFile("assets/fonts/font2.ttf");
         nodes = new LinkedList<NodeObject *>;
-        lastNode = nullptr;
+        window = win;
+
+        b1 = new Button(font);
+        b1->setText("Append");
+        b1->setPos(1200, 25);
+
+        b2 = new Button(font);
+        b2->setText("Prepend");
+        b2->setPos(1200, 250);
+
+        b3 = new Button(font);
+        b3->setText("Pop Tail");
+        b3->setPos(1200, 475);
+
+        b4 = new Button(font);
+        b4->setText("Pop Head");
+        b4->setPos(1200, 700);
     }
 
-    void add_node(int data)
+    void randomNodes(int n, int m = 1000)
+    {
+        for (int i = 0; i < n; i++)
+            append_node(rand() % m);
+    }
+
+    NodeObject *append_node(int data)
     {
         NodeObject *obj = new NodeObject(font);
-        int i = nodes->getLength();
         obj->setText(to_string(data));
-
+        int i = nodes->getLength();
         int row = i / 5;
         int col = i % 5;
 
         if (row % 2 == 0)
-            obj->setPos(325 * col + 150, 300 * row + 150);
+            obj->setPos(250 * col + 100, 250 * row + 100);
         else
-            obj->setPos(-325 * col + 1450, 300 * row + 150);
+            obj->setPos(-250 * col + 1100, 250 * row + 100);
 
-        if (lastNode != nullptr)
-            lastNode->setArrow(obj->shape.getPosition());
+        if (!nodes->isEmpty())
+        {
+            NodeObject *lastNode = nodes->getTail()->data;
+            if (lastNode != nullptr)
+                lastNode->setArrow(obj->shape.getPosition());
+        }
+        obj->setArrow(Vector2f(1100, 1100));
 
         nodes->append(obj);
-        lastNode = obj;
+        return obj;
     }
 
-    void visualize(RenderWindow &win)
+    NodeObject *prepend_node(int data)
+    {
+        NodeObject *next = nodes->getHead()->data;
+        NodeObject *obj = new NodeObject(font);
+        obj->setText(to_string(data));
+
+        Vector2f nextPos = next->shape.getPosition();
+
+        int row = (nextPos.y - 100) / 250;
+        int colPos = (row % 2 == 0)
+                         ? nextPos.x - 250
+                         : nextPos.x + 250;
+        obj->setPos(colPos, nextPos.y);
+        obj->setArrow(nextPos);
+
+        nodes->prepend(obj);
+        return obj;
+    }
+
+    void append_node_viz(int data)
+    {
+        NodeObject *obj = append_node(data);
+
+        int i = 0;
+        while (i < 255)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i++;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+    }
+
+    void prepend_node_viz(int data)
+    {
+        NodeObject *obj = prepend_node(data);
+
+        int i = 0;
+        while (i < 255)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i++;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+    }
+
+    void del_tail_viz()
+    {
+        NodeObject *obj = nodes->getTail()->data;
+
+        int i = 255;
+        while (i >= 0)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i--;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+
+        nodes->removeTail();
+        obj = nodes->getTail()->data;
+        obj->setArrow(Vector2f(1100, 1100));
+    }
+
+    void del_head_viz()
+    {
+        NodeObject *obj = nodes->getHead()->data;
+
+        int i = 255;
+        while (i >= 0)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i--;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+
+        nodes->removeHead();
+    }
+
+    void buttonClicked(int x, int y)
+    {
+        if (b1->isOverlap(x, y))
+            append_node_viz(rand() % 500 - 500);
+
+        else if (b2->isOverlap(x, y))
+            prepend_node_viz(rand() % 500 - 500);
+
+        else if (b3->isOverlap(x, y))
+            del_tail_viz();
+
+        else if (b4->isOverlap(x, y))
+            del_head_viz();
+    }
+
+    void buttonHover(int x, int y)
+    {
+        b1->setNormalColor();
+        b2->setNormalColor();
+        b3->setNormalColor();
+        b4->setNormalColor();
+
+        if (b1->isOverlap(x, y))
+            b1->setHoverColor();
+
+        else if (b2->isOverlap(x, y))
+            b2->setHoverColor();
+
+        else if (b3->isOverlap(x, y))
+            b3->setHoverColor();
+
+        else if (b4->isOverlap(x, y))
+            b4->setHoverColor();
+    }
+
+    void visualize()
     {
         ListNode<NodeObject *> *cur = nodes->getHead();
         while (cur != nullptr)
         {
-            cur->data->draw(win);
+            cur->data->draw(window);
             cur = cur->next;
         }
+
+        b1->draw(window);
+        b2->draw(window);
+        b3->draw(window);
+        b4->draw(window);
     }
 };
 
 void foo()
 {
 
-    RenderWindow window(VideoMode(1600, 900), "Linked List");
+    RenderWindow *window = new RenderWindow(VideoMode(1600, 900), "Linked List");
 
-    LinkedListVisualizer viz;
+    LinkedListVisualizer *visualizer = new LinkedListVisualizer(window);
 
-    for (int i = 0; i < 15; i++)
-        viz.add_node(i * i * 10);
+    visualizer->randomNodes(12);
 
-    while (window.isOpen())
+    while (window->isOpen())
     {
-        Event event;
-        while (window.pollEvent(event))
-            if (event.type == Event::Closed)
-                window.close();
+        Vector2i worldPos = window->getPosition();
+        worldPos.y += 30;
 
-        window.clear(Color::Black);
-        viz.visualize(window);
-        window.display();
+        Vector2i pos = Mouse::getPosition() - worldPos;
+        visualizer->buttonHover(pos.x, pos.y);
+
+        Event event;
+        while (window->pollEvent(event))
+        {
+            if (event.type == Event::Closed)
+                window->close();
+
+            else if (event.type == Event::MouseButtonPressed)
+                visualizer->buttonClicked(pos.x, pos.y);
+        }
+
+        window->clear(Color(0, 0, 0));
+        visualizer->visualize();
+        window->display();
     }
 }
 

@@ -3,5 +3,6 @@
 
 int main()
 {
+	srand(time(0));
 	foo();
 }
