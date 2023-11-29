@@ -12,7 +12,6 @@ struct LinkedListVisualizer
     Font font;
     Clock clock;
     RenderWindow *window;
-    NodeObject *lastNode;
     Button *b1, *b2, *b3, *b4;
     LinkedList<NodeObject *> *nodes;
 
@@ -20,33 +19,32 @@ struct LinkedListVisualizer
     {
         font.loadFromFile("assets/fonts/font2.ttf");
         nodes = new LinkedList<NodeObject *>;
-        lastNode = nullptr;
         window = win;
 
         b1 = new Button(font);
         b1->setText("Append");
-        b1->setPos(1400, 100);
+        b1->setPos(1200, 25);
 
         b2 = new Button(font);
         b2->setText("Prepend");
-        b2->setPos(1400, 325);
+        b2->setPos(1200, 250);
 
         b3 = new Button(font);
         b3->setText("Pop Tail");
-        b3->setPos(1400, 550);
+        b3->setPos(1200, 475);
 
         b4 = new Button(font);
         b4->setText("Pop Head");
-        b4->setPos(1400, 775);
+        b4->setPos(1200, 700);
     }
 
     void randomNodes(int n, int m = 1000)
     {
         for (int i = 0; i < n; i++)
-            add_node(rand() % m);
+            append_node(rand() % m);
     }
 
-    NodeObject *add_node(int data)
+    NodeObject *append_node(int data)
     {
         NodeObject *obj = new NodeObject(font);
         obj->setText(to_string(data));
@@ -59,18 +57,60 @@ struct LinkedListVisualizer
         else
             obj->setPos(-250 * col + 1100, 250 * row + 100);
 
-        if (lastNode != nullptr)
-            lastNode->setArrow(obj->shape.getPosition());
+        if (!nodes->isEmpty())
+        {
+            NodeObject *lastNode = nodes->getTail()->data;
+            if (lastNode != nullptr)
+                lastNode->setArrow(obj->shape.getPosition());
+        }
         obj->setArrow(Vector2f(1100, 1100));
 
         nodes->append(obj);
-        lastNode = obj;
         return obj;
     }
 
-    void add_node_viz(int data)
+    NodeObject *prepend_node(int data)
     {
-        NodeObject *obj = add_node(data);
+        NodeObject *next = nodes->getHead()->data;
+        NodeObject *obj = new NodeObject(font);
+        obj->setText(to_string(data));
+
+        Vector2f nextPos = next->shape.getPosition();
+
+        int row = (nextPos.y - 100) / 250;
+        int colPos = (row % 2 == 0)
+                         ? nextPos.x - 250
+                         : nextPos.x + 250;
+        obj->setPos(colPos, nextPos.y);
+        obj->setArrow(nextPos);
+
+        nodes->prepend(obj);
+        return obj;
+    }
+
+    void append_node_viz(int data)
+    {
+        NodeObject *obj = append_node(data);
+
+        int i = 0;
+        while (i < 255)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i++;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+    }
+
+    void prepend_node_viz(int data)
+    {
+        NodeObject *obj = prepend_node(data);
 
         int i = 0;
         while (i < 255)
@@ -110,22 +150,63 @@ struct LinkedListVisualizer
         nodes->removeTail();
         obj = nodes->getTail()->data;
         obj->setArrow(Vector2f(1100, 1100));
-        lastNode = obj;
+    }
+
+    void del_head_viz()
+    {
+        NodeObject *obj = nodes->getHead()->data;
+
+        int i = 255;
+        while (i >= 0)
+        {
+            if (clock.getElapsedTime() >= seconds(0.01))
+            {
+                i--;
+                clock.restart();
+                obj->setAllAlpha(i);
+            }
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+
+        nodes->removeHead();
     }
 
     void buttonClicked(int x, int y)
     {
         if (b1->isOverlap(x, y))
-            add_node_viz(rand() % 500 - 500);
+            append_node_viz(rand() % 500 - 500);
 
         else if (b2->isOverlap(x, y))
-            cout << "B2 Pressed" << endl;
+            prepend_node_viz(rand() % 500 - 500);
 
         else if (b3->isOverlap(x, y))
             del_tail_viz();
 
         else if (b4->isOverlap(x, y))
-            cout << "B4 Pressed" << endl;
+            del_head_viz();
+    }
+
+    void buttonHover(int x, int y)
+    {
+        b1->setNormalColor();
+        b2->setNormalColor();
+        b3->setNormalColor();
+        b4->setNormalColor();
+
+        if (b1->isOverlap(x, y))
+            b1->setHoverColor();
+
+        else if (b2->isOverlap(x, y))
+            b2->setHoverColor();
+
+        else if (b3->isOverlap(x, y))
+            b3->setHoverColor();
+
+        else if (b4->isOverlap(x, y))
+            b4->setHoverColor();
     }
 
     void visualize()
@@ -155,6 +236,12 @@ void foo()
 
     while (window->isOpen())
     {
+        Vector2i worldPos = window->getPosition();
+        worldPos.y += 30;
+
+        Vector2i pos = Mouse::getPosition() - worldPos;
+        visualizer->buttonHover(pos.x, pos.y);
+
         Event event;
         while (window->pollEvent(event))
         {
@@ -162,10 +249,7 @@ void foo()
                 window->close();
 
             else if (event.type == Event::MouseButtonPressed)
-            {
-                Vector2i pos = Mouse::getPosition();
                 visualizer->buttonClicked(pos.x, pos.y);
-            }
         }
 
         window->clear(Color(0, 0, 0));

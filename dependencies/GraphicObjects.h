@@ -131,10 +131,8 @@ struct Button
 
         int w = 350, b = 150;
         box.setSize(Vector2f(w, b));
-        box.setOrigin(w / 2, b / 2);
         box.setOutlineThickness(-6.f);
         box.setFillColor(Color(0, 0, 155));
-        box.setOutlineColor(Color(0, 0, 75));
     }
 
     void setText(string x)
@@ -147,7 +145,7 @@ struct Button
     void setPos(int x, int y)
     {
         box.setPosition(x, y);
-        text.setPosition(x, y);
+        text.setPosition(x + 175, y + 75);
     }
 
     bool isOverlap(int x, int y)
@@ -163,6 +161,16 @@ struct Button
     {
         win->draw(box);
         win->draw(text);
+    }
+
+    void setNormalColor()
+    {
+        box.setOutlineColor(Color(0, 0, 75));
+    }
+
+    void setHoverColor()
+    {
+        box.setOutlineColor(Color(0, 75, 0));
     }
 };
 
