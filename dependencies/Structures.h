@@ -2,7 +2,6 @@
 #include <iostream>
 using namespace std;
 
-
 template <typename T>
 class DynamicSafeArray
 {
@@ -63,17 +62,15 @@ public:
     }
 };
 
-
 template <typename T>
 struct ListNode
 {
     T data;
     ListNode<T> *next;
 
-    ListNode(T data, ListNode<T> *next = nullptr) 
+    ListNode(T data, ListNode<T> *next = nullptr)
         : data(data), next(next) {}
 };
-
 
 template <typename T>
 struct TreeNode
@@ -86,11 +83,10 @@ struct TreeNode
         : data(data), left(left), right(right) {}
 };
 
-
 template <typename T>
 class LinkedList
 {
-protected:
+private:
     ListNode<T> *head;
     ListNode<T> *tail;
 
@@ -100,6 +96,8 @@ public:
     inline bool isEmpty() { return head == nullptr; }
 
     ListNode<T> *getHead() { return head; }
+
+    ListNode<T> *getTail() { return tail; }
 
     void append(T data)
     {
@@ -125,9 +123,50 @@ public:
 
     T removeHead()
     {
-        T temp = head->data;
-        head = head->next;
-        return temp;
+        if (isEmpty())
+            return T();
+
+        ListNode<T> *temp = head;
+
+        if (temp == tail)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+            head = head->next;
+
+        T tempval = temp->data;
+        delete temp;
+        return tempval;
+    }
+
+    T removeTail()
+    {
+        if (isEmpty())
+            return T();
+
+        ListNode<T> *temp = head;
+
+        if (temp == tail)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+
+        else
+        {
+            while (temp->next != tail)
+                temp = temp->next;
+
+            tail = temp;
+            temp = tail->next;
+            tail->next = nullptr;
+        }
+
+        T tempval = temp->data;
+        delete temp;
+        return tempval;
     }
 
     int getLength()
@@ -144,20 +183,26 @@ public:
             cout << cur->data << " -> ";
         cout << "NULL" << endl;
     }
-};
 
+    ~LinkedList()
+    {
+        if (head != nullptr)
+            delete head;
+        if (tail != nullptr)
+            delete tail;
+    }
+};
 
 template <typename T>
 class Stack : public LinkedList<T>
 {
 public:
-    void push(T data) { LinkedList<T>::prepend(data); }
+    void push(T data) { LinkedList<T>::append(data); }
 
-    T pop() { return LinkedList<T>::removeHead(); }
+    T pop() { return LinkedList<T>::removeTail(); }
 
-    T peek() { return LinkedList<T>::tail->data; }
+    T peek() { return LinkedList<T>::getTail()->data; }
 };
-
 
 template <typename T>
 class Queue : public LinkedList<T>
@@ -167,9 +212,8 @@ public:
 
     T dequeue() { return LinkedList<T>::removeHead(); }
 
-    T peek() { return LinkedList<T>::head->data; }
+    T peek() { return LinkedList<T>::getHead()->data; }
 };
-
 
 template <typename T>
 struct AVLTree

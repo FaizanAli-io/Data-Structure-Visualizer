@@ -18,13 +18,13 @@ void testStack()
     Stack<int> stack;
 
     for (int i = 0; i < 10; i++)
-    {       
+    {
         stack.push(i);
         stack.print();
     }
 
     for (int i = 0; i < 10; i++)
-    {        
+    {
         stack.pop();
         stack.print();
     }
@@ -35,13 +35,13 @@ void testQueue()
     Queue<int> queue;
 
     for (int i = 0; i < 10; i++)
-    {       
+    {
         queue.enqueue(i);
         queue.print();
     }
 
     for (int i = 0; i < 10; i++)
-    {        
+    {
         queue.dequeue();
         queue.print();
     }
