@@ -1,11 +1,7 @@
-#include "Dependencies/LinkMenu.cpp"
-#include "Dependencies/LinkedList.h"
+#include "Dependencies/menu.cpp"
+
 
 int main()
 {
-	srand(time(0));
-
-	// mainMenuFunc();
-
-	foo();
+	runfoo();
 }
