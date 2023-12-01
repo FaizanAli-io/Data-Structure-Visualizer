@@ -77,10 +77,10 @@ struct NodeObject
         text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
     }
 
-    void setPos(int x, int y)
+    void setPos(Vector2f pos)
     {
-        shape.setPosition(x, y);
-        text.setPosition(x, y);
+        shape.setPosition(pos.x, pos.y);
+        text.setPosition(pos.x, pos.y);
     }
 
     void setArrow(Vector2f dst)
@@ -112,12 +112,6 @@ struct NodeObject
     }
 };
 
-ostream &operator<<(ostream &out, NodeObject &obj)
-{
-    string s = obj.text.getString();
-    return out << s;
-}
-
 struct Button
 {
     Text text;
@@ -142,19 +136,19 @@ struct Button
         text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
     }
 
-    void setPos(int x, int y)
+    void setPos(Vector2f pos)
     {
-        box.setPosition(x, y);
-        text.setPosition(x + 175, y + 75);
+        box.setPosition(pos.x, pos.y);
+        text.setPosition(pos.x + 175, pos.y + 75);
     }
 
-    bool isOverlap(int x, int y)
+    bool isOverlap(Vector2i mPos)
     {
         Vector2f pos = box.getPosition();
         Vector2f size = box.getSize();
 
-        return x >= pos.x && x <= pos.x + size.x &&
-               y >= pos.y && y <= pos.y + size.y;
+        return mPos.x >= pos.x && mPos.x <= pos.x + size.x &&
+               mPos.y >= pos.y && mPos.y <= pos.y + size.y;
     }
 
     void draw(RenderWindow *win)
@@ -173,5 +167,11 @@ struct Button
         box.setOutlineColor(Color(0, 75, 0));
     }
 };
+
+ostream &operator<<(ostream &out, NodeObject &obj)
+{
+    string s = obj.text.getString();
+    return out << s;
+}
 
 #endif
