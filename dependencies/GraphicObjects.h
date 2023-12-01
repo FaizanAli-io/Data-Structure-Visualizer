@@ -115,24 +115,23 @@ struct NodeObject
     }
 };
 
-struct Button
+struct BoxObject
 {
-    bool enabled;
     Text text;
     RectangleShape box;
+    int w = 400, b = 75;
 
-    Button(Font &font)
+    BoxObject(Font &font)
     {
-        enabled = true;
-
         text.setFont(font);
-        text.setCharacterSize(72);
-        text.setFillColor(Color(125, 0, 155));
+        text.setCharacterSize(64);
+        text.setFillColor(Color(255, 0, 255));
 
-        int w = 350, b = 150;
+        w = 400, b = 75;
         box.setSize(Vector2f(w, b));
-        box.setOutlineThickness(-6.f);
-        box.setFillColor(Color(0, 0, 155));
+        box.setOutlineThickness(-4.f);
+        box.setFillColor(Color(0, 0, 255));
+        box.setOutlineColor(Color(255, 0, 0));
     }
 
     void setText(string x)
@@ -145,7 +144,47 @@ struct Button
     void setPos(Vector2f pos)
     {
         box.setPosition(pos.x, pos.y);
-        text.setPosition(pos.x + 175, pos.y + 75);
+        text.setPosition(pos.x + w / 2, pos.y + b / 2);
+    }
+
+    void setAllAlpha(int i)
+    {
+        i = i > 255 ? 255 : i;
+        i = i < 0 ? 0 : i;
+
+        Color col = box.getFillColor();
+        col.a = i;
+        box.setFillColor(col);
+
+        col = box.getOutlineColor();
+        col.a = i;
+        box.setOutlineColor(col);
+
+        col = text.getFillColor();
+        col.a = i;
+        text.setFillColor(col);
+    }
+
+    void draw(RenderWindow *win)
+    {
+        win->draw(box);
+        win->draw(text);
+    }
+};
+
+struct Button : public BoxObject
+{
+    bool enabled;
+
+    Button(Font &font) : BoxObject(font), enabled(true)
+    {
+        text.setCharacterSize(72);
+        text.setFillColor(Color(125, 0, 155));
+
+        w = 350, b = 150;
+        box.setSize(Vector2f(w, b));
+        box.setOutlineThickness(-8.f);
+        box.setFillColor(Color(0, 0, 155));
     }
 
     bool isOverlap(Vector2i mPos)
@@ -169,19 +208,13 @@ struct Button
         win->draw(text);
     }
 
-    void setNormalColor()
-    {
-        box.setOutlineColor(Color(0, 0, 75));
-    }
-
-    void setHoverColor()
-    {
-        box.setOutlineColor(Color(0, 75, 0));
-    }
-
     void enableButton() { enabled = true; }
 
     void disableButton() { enabled = false; }
+
+    void setHoverColor() { box.setOutlineColor(Color(0, 75, 0)); }
+
+    void setNormalColor() { box.setOutlineColor(Color(0, 0, 75)); }
 };
 
 ostream &operator<<(ostream &out, NodeObject &obj)

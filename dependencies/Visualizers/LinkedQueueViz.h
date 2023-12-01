@@ -16,7 +16,7 @@ struct LinkedQueueVisualizer : public LinkedListVisualizer
     void buttonClicked(Vector2i mPos)
     {
         if (b3->isOverlap(mPos))
-            append_node_viz(rand() % 500 - 500);
+            append_node_viz(rand() % 500);
 
         else if (b4->isOverlap(mPos))
             del_head_viz();

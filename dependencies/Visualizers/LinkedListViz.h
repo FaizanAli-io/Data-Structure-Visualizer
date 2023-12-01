@@ -174,13 +174,13 @@ struct LinkedListVisualizer
         nodes->removeHead();
     }
 
-    void buttonClicked(Vector2i mPos)
+    virtual void buttonClicked(Vector2i mPos)
     {
         if (b1->isOverlap(mPos))
-            append_node_viz(rand() % 500 - 500);
+            append_node_viz(rand() % 500);
 
         else if (b2->isOverlap(mPos))
-            prepend_node_viz(rand() % 500 - 500);
+            prepend_node_viz(rand() % 500);
 
         else if (b3->isOverlap(mPos))
             del_tail_viz();

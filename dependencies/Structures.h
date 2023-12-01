@@ -5,12 +5,11 @@ using namespace std;
 #define STRUCTURES
 
 template <typename T>
-class DynamicSafeArray
+struct DynamicSafeArray
 {
     int size;
     T *data;
 
-public:
     DynamicSafeArray() : size(0), data(nullptr) {}
 
     T &operator[](int index)
@@ -86,13 +85,11 @@ struct TreeNode
 };
 
 template <typename T>
-class LinkedList
+struct LinkedList
 {
-private:
     ListNode<T> *head;
     ListNode<T> *tail;
 
-public:
     LinkedList() : head(nullptr), tail(nullptr) {}
 
     inline bool isEmpty() { return head == nullptr; }
@@ -193,28 +190,6 @@ public:
         if (tail != nullptr)
             delete tail;
     }
-};
-
-template <typename T>
-class Stack : public LinkedList<T>
-{
-public:
-    void push(T data) { LinkedList<T>::append(data); }
-
-    T pop() { return LinkedList<T>::removeTail(); }
-
-    T peek() { return LinkedList<T>::getTail()->data; }
-};
-
-template <typename T>
-class Queue : public LinkedList<T>
-{
-public:
-    void enqueue(T data) { LinkedList<T>::append(data); }
-
-    T dequeue() { return LinkedList<T>::removeHead(); }
-
-    T peek() { return LinkedList<T>::getHead()->data; }
 };
 
 template <typename T>
@@ -369,7 +344,6 @@ struct AVLTree
         return balanceTree(node);
     }
 
-public:
     AVLTree() : root(nullptr) {}
 
     void insert(T data) { root = insertHelper(root, data); }
@@ -429,9 +403,9 @@ public:
 
     void levelorder(TreeNode<T> *node = nullptr)
     {
-        Queue<TreeNode<T> *> nodes;
+        LinkedList<TreeNode<T> *> nodes;
 
-        node ? nodes.enqueue(node) : nodes.enqueue(root);
+        node ? nodes.append(node) : nodes.removeTail(root);
 
         while (!nodes.isEmpty())
         {
