@@ -1,11 +1,8 @@
-#include "Dependencies/LinkMenu.cpp"
-#include "Dependencies/LinkedList.h"
+#include "vizFuncs.h"
 
 int main()
 {
 	srand(time(0));
 
-	// mainMenuFunc();
-
-	foo();
+	forLinkedQueue();
 }

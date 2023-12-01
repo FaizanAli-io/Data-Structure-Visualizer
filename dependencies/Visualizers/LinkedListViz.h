@@ -1,21 +1,20 @@
-#include <SFML/Graphics.hpp>
-using namespace sf;
-
-#include "Structures.h"
-#include "GraphicObjects.h"
+#include "../Structures.h"
+#include "../GraphicObjects.h"
 
 #ifndef LINKEDLIST
 #define LINKEDLIST
 
 struct LinkedListVisualizer
 {
+    const float animationSpeed = 2.5;
+    const Vector2f NullSpot = Vector2f(1100, 1100);
+
     Font font;
     Clock clock;
     int head, tail;
     RenderWindow *window;
     Button *b1, *b2, *b3, *b4;
     LinkedList<NodeObject *> *nodes;
-    const Vector2f NullSpot = Vector2f(1100, 1100);
 
     LinkedListVisualizer(RenderWindow *win) : window(win), tail(0), head(-1)
     {
@@ -45,7 +44,8 @@ struct LinkedListVisualizer
             append_node(rand() % m);
     }
 
-    Vector2f setPositionFromIndex(int i) {
+    Vector2f setPositionFromIndex(int i)
+    {
         int row = i / 5;
         int col = i % 5;
 
@@ -95,7 +95,7 @@ struct LinkedListVisualizer
         {
             if (clock.getElapsedTime() >= seconds(0.01))
             {
-                i++;
+                i += animationSpeed;
                 clock.restart();
                 obj->setAllAlpha(i);
             }
@@ -115,7 +115,7 @@ struct LinkedListVisualizer
         {
             if (clock.getElapsedTime() >= seconds(0.01))
             {
-                i++;
+                i += animationSpeed;
                 clock.restart();
                 obj->setAllAlpha(i);
             }
@@ -135,7 +135,7 @@ struct LinkedListVisualizer
         {
             if (clock.getElapsedTime() >= seconds(0.01))
             {
-                i--;
+                i -= animationSpeed;
                 clock.restart();
                 obj->setAllAlpha(i);
             }
@@ -144,7 +144,7 @@ struct LinkedListVisualizer
             visualize();
             window->display();
         }
-        
+
         tail--;
         nodes->removeTail();
         obj = nodes->getTail()->data;
@@ -160,7 +160,7 @@ struct LinkedListVisualizer
         {
             if (clock.getElapsedTime() >= seconds(0.01))
             {
-                i--;
+                i -= animationSpeed;
                 clock.restart();
                 obj->setAllAlpha(i);
             }
@@ -224,38 +224,5 @@ struct LinkedListVisualizer
         b4->draw(window);
     }
 };
-
-void foo()
-{
-
-    RenderWindow *window = new RenderWindow(VideoMode(1600, 900), "Linked List");
-
-    LinkedListVisualizer *visualizer = new LinkedListVisualizer(window);
-
-    visualizer->randomNodes(8);
-
-    while (window->isOpen())
-    {
-        Vector2i worldPos = window->getPosition();
-        worldPos.y += 30;
-
-        Vector2i mousePos = Mouse::getPosition() - worldPos;
-        visualizer->buttonHover(mousePos);
-
-        Event event;
-        while (window->pollEvent(event))
-        {
-            if (event.type == Event::Closed)
-                window->close();
-
-            else if (event.type == Event::MouseButtonPressed)
-                visualizer->buttonClicked(mousePos);
-        }
-
-        window->clear(Color(0, 0, 0));
-        visualizer->visualize();
-        window->display();
-    }
-}
 
 #endif

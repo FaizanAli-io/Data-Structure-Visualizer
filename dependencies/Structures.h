@@ -1,6 +1,8 @@
-#include <cstdlib>
 #include <iostream>
 using namespace std;
+
+#ifndef STRUCTURES
+#define STRUCTURES
 
 template <typename T>
 class DynamicSafeArray
@@ -446,3 +448,5 @@ public:
         cout << endl;
     }
 };
+
+#endif

@@ -91,6 +91,9 @@ struct NodeObject
 
     void setAllAlpha(int i)
     {
+        i = i > 255 ? 255 : i;
+        i = i < 0 ? 0 : i;
+
         Color col = shape.getFillColor();
         col.a = i;
         shape.setFillColor(col);
@@ -114,11 +117,14 @@ struct NodeObject
 
 struct Button
 {
+    bool enabled;
     Text text;
     RectangleShape box;
 
     Button(Font &font)
     {
+        enabled = true;
+
         text.setFont(font);
         text.setCharacterSize(72);
         text.setFillColor(Color(125, 0, 155));
@@ -144,6 +150,9 @@ struct Button
 
     bool isOverlap(Vector2i mPos)
     {
+        if (!enabled)
+            return false;
+
         Vector2f pos = box.getPosition();
         Vector2f size = box.getSize();
 
@@ -153,6 +162,9 @@ struct Button
 
     void draw(RenderWindow *win)
     {
+        if (!enabled)
+            return;
+
         win->draw(box);
         win->draw(text);
     }
@@ -166,6 +178,10 @@ struct Button
     {
         box.setOutlineColor(Color(0, 75, 0));
     }
+
+    void enableButton() { enabled = true; }
+
+    void disableButton() { enabled = false; }
 };
 
 ostream &operator<<(ostream &out, NodeObject &obj)
