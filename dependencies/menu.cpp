@@ -19,24 +19,25 @@ void Menu::set_values(){
   pos = 0;
   pressed = theselect = false;
   font->loadFromFile("assets/fonts/font1.ttf");
-  image->loadFromFile("assets/fonts/green_wavy_hills_nature-wallpaper-1280x768.jpg");
+  image->loadFromFile("assets/fonts/hmm.jpg");
 
   bg->setTexture(*image);
 
   pos_mouse = {0,0};
   mouse_coord = {0, 0};
 
-  options = {"Data Structure Visualizer", "Linked List ", "Stack", "AVL", "Quit"};
-  texts.resize(5);
-  coords = {{590,40},{610,191},{590,282},{600,370},{623,457}};//cordinates of texts(calculated via getpos)
-  sizes = {20,28,24,24,24};//Set your size of text
+  options = {"Data Structure Visualizer", "Linked List ", "Stack_Queue", "AVL","Heap","Quit"};
+  texts.resize(6);
+  coords = {{590,40},{610,191},{590,282},{600,370},{623,457},{660,550}};//cordinates of texts(calculated via getpos)
+  sizes = {40,45,44,44,43,46};//Set your size of text
 
   for (std::size_t i{}; i < texts.size(); ++i){
    texts[i].setFont(*font); 
    texts[i].setString(options[i]); 
    texts[i].setCharacterSize(sizes[i]);
-   texts[i].setOutlineColor(sf::Color::Black);
+   texts[i].setOutlineColor(sf::Color::Blue);
    texts[i].setPosition(coords[i]);
+   texts[i].setFillColor(sf::Color::Red);
   }
   texts[1].setOutlineThickness(4);
   pos = 1;
@@ -58,7 +59,7 @@ void Menu::loop_events(){
     mouse_coord = window->mapPixelToCoords(pos_mouse);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !pressed){
-      if( pos < 4){
+      if( pos < 5){
         ++pos;
         pressed = true;
         texts[pos].setOutlineThickness(4);
@@ -81,7 +82,7 @@ void Menu::loop_events(){
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !theselect){
       theselect = true;
-       if( pos == 4){
+       if( pos == 5){
         window->close();
         }
       
@@ -92,6 +93,10 @@ void Menu::loop_events(){
         else if (pos==2)
         {
           //different functions; for stack
+        }
+        else if (pos==3)
+        {
+
         }
       
       
