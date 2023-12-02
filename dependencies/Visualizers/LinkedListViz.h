@@ -7,6 +7,7 @@
 struct LinkedListVisualizer
 {
     const float animationSpeed = 2.5;
+    const float updateSpeed = 0.01;
     const Vector2f NullSpot = Vector2f(1100, 1100);
 
     Font font;
@@ -86,16 +87,19 @@ struct LinkedListVisualizer
         return obj;
     }
 
-    void append_node_viz(int data)
+    void animation(NodeObject *obj, bool fadein)
     {
-        NodeObject *obj = append_node(data);
-
-        int i = 0;
-        while (i < 255)
+        int i = fadein ? 0 : 255;
+        while ((fadein && i < 255) || (!fadein && i > 0))
         {
-            if (clock.getElapsedTime() >= seconds(0.01))
+            Event event;
+            while (window->pollEvent(event))
+                if (event.type == Event::Closed)
+                    window->close();
+
+            if (clock.getElapsedTime() >= seconds(updateSpeed))
             {
-                i += animationSpeed;
+                i += animationSpeed * (fadein ? 1 : -1);
                 clock.restart();
                 obj->setAllAlpha(i);
             }
@@ -104,46 +108,24 @@ struct LinkedListVisualizer
             visualize();
             window->display();
         }
+    }
+
+    void append_node_viz(int data)
+    {
+        NodeObject *obj = append_node(data);
+        animation(obj, true);
     }
 
     void prepend_node_viz(int data)
     {
         NodeObject *obj = prepend_node(data);
-
-        int i = 0;
-        while (i < 255)
-        {
-            if (clock.getElapsedTime() >= seconds(0.01))
-            {
-                i += animationSpeed;
-                clock.restart();
-                obj->setAllAlpha(i);
-            }
-
-            window->clear();
-            visualize();
-            window->display();
-        }
+        animation(obj, true);
     }
 
     void del_tail_viz()
     {
         NodeObject *obj = nodes->getTail()->data;
-
-        int i = 255;
-        while (i >= 0)
-        {
-            if (clock.getElapsedTime() >= seconds(0.01))
-            {
-                i -= animationSpeed;
-                clock.restart();
-                obj->setAllAlpha(i);
-            }
-
-            window->clear();
-            visualize();
-            window->display();
-        }
+        animation(obj, false);
 
         tail--;
         nodes->removeTail();
@@ -154,21 +136,7 @@ struct LinkedListVisualizer
     void del_head_viz()
     {
         NodeObject *obj = nodes->getHead()->data;
-
-        int i = 255;
-        while (i >= 0)
-        {
-            if (clock.getElapsedTime() >= seconds(0.01))
-            {
-                i -= animationSpeed;
-                clock.restart();
-                obj->setAllAlpha(i);
-            }
-
-            window->clear();
-            visualize();
-            window->display();
-        }
+        animation(obj, false);
 
         head++;
         nodes->removeHead();

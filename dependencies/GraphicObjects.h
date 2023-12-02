@@ -17,26 +17,26 @@ struct Arrow
 
     Arrow()
     {
-        float r = 30.f;
+        float r = 30;
         triangle.setRadius(r);
         triangle.setOrigin(r, r);
         triangle.setPointCount(3);
-        triangle.setOutlineThickness(-3.f);
+        triangle.setOutlineThickness(-2);
 
         line.setFillColor(Color(0, 255, 0));
         triangle.setFillColor(Color(0, 255, 0));
         triangle.setOutlineColor(Color(255, 255, 0));
     }
 
-    void set(Vector2f beg, Vector2f end)
+    void set(Vector2f beg, Vector2f end, float scale = 1)
     {
-        Vector2f dirVector = (end - beg) * 0.6f;
-        float arrowLength = magnitude(dirVector.x, dirVector.y);
+        Vector2f dirVector = (end - beg) * scale;
+        int arrowLength = magnitude(dirVector.x, dirVector.y);
         int angleBetween = angleInDegrees(dirVector.x, dirVector.y);
 
         line.setPosition(beg);
         triangle.setPosition(beg + dirVector);
-        line.setSize(Vector2f(arrowLength, 6.f));
+        line.setSize(Vector2f(arrowLength, 10));
 
         line.setRotation(angleBetween);
         triangle.setRotation(angleBetween + 90);
@@ -46,6 +46,34 @@ struct Arrow
     {
         win->draw(line);
         win->draw(triangle);
+    }
+};
+
+struct Label : public Arrow
+{
+    Text text;
+
+    Label(Font &font, string value) : Arrow()
+    {
+        text.setFont(font);
+        text.setCharacterSize(36);
+        text.setFillColor(Color(125, 0, 155));
+        text.setString(value);
+
+        Vector2f textSize = text.getGlobalBounds().getSize();
+        text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
+    }
+
+    void set(Vector2f beg, Vector2f end, Vector2f offset, float scale = 1)
+    {
+        Arrow::set(beg, end, scale);
+        text.setPosition(beg + offset);
+    }
+
+    void draw(RenderWindow *win)
+    {
+        Arrow::draw(win);
+        win->draw(text);
     }
 };
 
@@ -86,7 +114,7 @@ struct NodeObject
     void setArrow(Vector2f dst)
     {
         Vector2f src = shape.getPosition();
-        pointer.set(src, dst);
+        pointer.set(src, dst, 0.6f);
     }
 
     void setAllAlpha(int i)
@@ -117,9 +145,9 @@ struct NodeObject
 
 struct BoxObject
 {
+    int w, b;
     Text text;
     RectangleShape box;
-    int w = 400, b = 75;
 
     BoxObject(Font &font)
     {
@@ -127,7 +155,7 @@ struct BoxObject
         text.setCharacterSize(64);
         text.setFillColor(Color(255, 0, 255));
 
-        w = 400, b = 75;
+        w = 300, b = 80;
         box.setSize(Vector2f(w, b));
         box.setOutlineThickness(-4.f);
         box.setFillColor(Color(0, 0, 255));

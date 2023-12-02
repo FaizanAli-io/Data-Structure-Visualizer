@@ -4,5 +4,5 @@ int main()
 {
 	srand(time(0));
 
-	forStackQueue();
+	forLinkedList();
 }
