@@ -1,8 +1,6 @@
-#include "vizFuncs.h"
+#include "Dependencies/MainMenu.h"
 
 int main()
 {
-	srand(time(0));
-
-	forTree();
+	runfoo();
 }
