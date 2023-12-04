@@ -1,5 +1,4 @@
-#include "Dependencies/menu.cpp"
-
+#include "Dependencies/MainMenu.h"
 
 int main()
 {
