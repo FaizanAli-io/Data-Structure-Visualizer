@@ -1,9 +1,8 @@
-#include "Dependencies/LinkMenu.cpp"
-#include "Dependencies/Visualizers/LinkedListViz.h"
-#include "Dependencies/Visualizers/LinkedStackViz.h"
-#include "Dependencies/Visualizers/LinkedQueueViz.h"
-#include "Dependencies/Visualizers/ArrayStackQueueViz.h"
-#include "Dependencies/Visualizers/AutoBalanceTreeVIz.h"
+#include "Visualizers/LinkedListViz.h"
+#include "Visualizers/LinkedStackViz.h"
+#include "Visualizers/LinkedQueueViz.h"
+#include "Visualizers/ArrayStackQueueViz.h"
+#include "Visualizers/AutoBalanceTreeViz.h"
 
 Vector2i trueMousePos(RenderWindow *win)
 {
@@ -71,7 +70,7 @@ void forStackQueue()
     }
 }
 
-void forTree()
+void forAVLTree()
 {
     RenderWindow *window = new RenderWindow(VideoMode(1600, 900), "Stack Queue");
 

@@ -1,10 +1,9 @@
-#include <SFML/Graphics.hpp>
-using namespace sf;
+#include "MainFuncs.h"
 
-#include <iostream>
-using namespace std;
+#ifndef MAINMENU
+#define MAINMENU
 
-class Menu
+class MainMenu
 {
   int pos;
   int len;
@@ -17,7 +16,7 @@ class Menu
   vector<string> options;
 
 public:
-  Menu()
+  MainMenu()
   {
     window = new RenderWindow(VideoMode(1600, 900), "Data Structure Visualizer", Style::Titlebar | Style::Close);
     options = {"Data Structure Visualizer", "Linked List ", "Stack Queue", "AVL Tree", "Heap", "Quit"};
@@ -50,7 +49,7 @@ public:
     }
   }
 
-  void run_menu()
+  void run()
   {
     while (window->isOpen())
     {
@@ -77,13 +76,13 @@ public:
         if (Keyboard::isKeyPressed(Keyboard::Enter))
         {
           if (pos == 1)
-            cout << pos << endl;
+            forLinkedList();
           else if (pos == 2)
-            cout << pos << endl;
+            forStackQueue();
           else if (pos == 3)
-            cout << pos << endl;
+            forAVLTree();
           else if (pos == 4)
-            cout << pos << endl;
+            cout << "Heap Visualizer" << endl;
           else if (pos == 5)
             window->close();
         }
@@ -98,8 +97,4 @@ public:
   }
 };
 
-void runfoo()
-{
-  Menu *menu = new Menu();
-  menu->run_menu();
-}
+#endif
