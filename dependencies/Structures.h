@@ -1,14 +1,18 @@
-#include <cstdlib>
 #include <iostream>
 using namespace std;
 
+#include <SFML/Graphics.hpp>
+using namespace sf;
+
+#ifndef STRUCTURES
+#define STRUCTURES
+
 template <typename T>
-class DynamicSafeArray
+struct DynamicSafeArray
 {
     int size;
     T *data;
 
-public:
     DynamicSafeArray() : size(0), data(nullptr) {}
 
     T &operator[](int index)
@@ -84,13 +88,11 @@ struct TreeNode
 };
 
 template <typename T>
-class LinkedList
+struct LinkedList
 {
-private:
     ListNode<T> *head;
     ListNode<T> *tail;
 
-public:
     LinkedList() : head(nullptr), tail(nullptr) {}
 
     inline bool isEmpty() { return head == nullptr; }
@@ -194,28 +196,6 @@ public:
 };
 
 template <typename T>
-class Stack : public LinkedList<T>
-{
-public:
-    void push(T data) { LinkedList<T>::append(data); }
-
-    T pop() { return LinkedList<T>::removeTail(); }
-
-    T peek() { return LinkedList<T>::getTail()->data; }
-};
-
-template <typename T>
-class Queue : public LinkedList<T>
-{
-public:
-    void enqueue(T data) { LinkedList<T>::append(data); }
-
-    T dequeue() { return LinkedList<T>::removeHead(); }
-
-    T peek() { return LinkedList<T>::getHead()->data; }
-};
-
-template <typename T>
 struct AVLTree
 {
     TreeNode<T> *root;
@@ -254,7 +234,7 @@ struct AVLTree
 
         if (balance > 1)
         {
-            if (data < node->left->data)
+            if (*data < *(node->left->data))
                 node = rightRotate(node);
 
             else
@@ -266,8 +246,9 @@ struct AVLTree
 
         else if (balance < -1)
         {
-            if (data > node->right->data)
+            if (*data > *(node->right->data))
                 node = leftRotate(node);
+
             else
             {
                 node->right = rightRotate(node->right);
@@ -312,14 +293,12 @@ struct AVLTree
     {
         if (node == nullptr)
             return new TreeNode<T>(data);
-
-        else if (data < node->data)
+        else if (*data < *(node->data))
             node->left = insertHelper(node->left, data);
-        else if (data > node->data)
+        else if (*data > *(node->data))
             node->right = insertHelper(node->right, data);
         else
             return node;
-
         return balanceTree(node, data);
     }
 
@@ -367,7 +346,6 @@ struct AVLTree
         return balanceTree(node);
     }
 
-public:
     AVLTree() : root(nullptr) {}
 
     void insert(T data) { root = insertHelper(root, data); }
@@ -427,9 +405,9 @@ public:
 
     void levelorder(TreeNode<T> *node = nullptr)
     {
-        Queue<TreeNode<T> *> nodes;
+        LinkedList<TreeNode<T> *> nodes;
 
-        node ? nodes.enqueue(node) : nodes.enqueue(root);
+        node ? nodes.append(node) : nodes.removeTail(root);
 
         while (!nodes.isEmpty())
         {
@@ -445,4 +423,11 @@ public:
 
         cout << endl;
     }
+
+    void recursiveTreeDraw(TreeNode<T> *node, RenderWindow *win);
+
+    void recursivesetPosition(TreeNode<T> *node, RenderWindow *win,
+                              int x, int y, int dx, int dy);
 };
+
+#endif

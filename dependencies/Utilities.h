@@ -1,5 +1,8 @@
 #include <cmath>
 
+#ifndef UTILITIES
+#define UTILITIES
+
 const double PI = (22.0 / 7.0);
 
 float angleInRadians(float x, float y)
@@ -16,3 +19,5 @@ float magnitude(float x, float y)
 {
     return sqrt(x * x + y * y);
 }
+
+#endif
