@@ -1,6 +1,9 @@
 #include <iostream>
 using namespace std;
 
+#include <SFML/Graphics.hpp>
+using namespace sf;
+
 #ifndef STRUCTURES
 #define STRUCTURES
 
@@ -231,7 +234,7 @@ struct AVLTree
 
         if (balance > 1)
         {
-            if (data < node->left->data)
+            if (*data < *(node->left->data))
                 node = rightRotate(node);
 
             else
@@ -243,8 +246,9 @@ struct AVLTree
 
         else if (balance < -1)
         {
-            if (data > node->right->data)
+            if (*data > *(node->right->data))
                 node = leftRotate(node);
+
             else
             {
                 node->right = rightRotate(node->right);
@@ -289,14 +293,12 @@ struct AVLTree
     {
         if (node == nullptr)
             return new TreeNode<T>(data);
-
-        else if (data < node->data)
+        else if (*data < *(node->data))
             node->left = insertHelper(node->left, data);
-        else if (data > node->data)
+        else if (*data > *(node->data))
             node->right = insertHelper(node->right, data);
         else
             return node;
-
         return balanceTree(node, data);
     }
 
@@ -421,6 +423,11 @@ struct AVLTree
 
         cout << endl;
     }
+
+    void recursiveTreeDraw(TreeNode<T> *node, RenderWindow *win);
+
+    void recursivesetPosition(TreeNode<T> *node, RenderWindow *win,
+                              int x, int y, int dx, int dy);
 };
 
 #endif

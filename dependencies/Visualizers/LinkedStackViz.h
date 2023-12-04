@@ -9,8 +9,8 @@ struct LinkedStackVisualizer : public LinkedListVisualizer
     {
         b1->setText("Push");
         b2->setText("Pop");
-        b3->disableButton();
-        b4->disableButton();
+        b3->enabled = false;
+        b4->enabled = false;
     }
 
     void buttonClicked(Vector2i mPos)

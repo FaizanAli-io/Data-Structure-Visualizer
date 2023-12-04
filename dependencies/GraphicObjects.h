@@ -12,6 +12,7 @@ using namespace sf;
 
 struct Arrow
 {
+    bool visible;
     RectangleShape line;
     CircleShape triangle;
 
@@ -26,10 +27,14 @@ struct Arrow
         line.setFillColor(Color(0, 255, 0));
         triangle.setFillColor(Color(0, 255, 0));
         triangle.setOutlineColor(Color(255, 255, 0));
+
+        visible = false;
     }
 
     void set(Vector2f beg, Vector2f end, float scale = 1)
     {
+        visible = true;
+
         Vector2f dirVector = (end - beg) * scale;
         int arrowLength = magnitude(dirVector.x, dirVector.y);
         int angleBetween = angleInDegrees(dirVector.x, dirVector.y);
@@ -44,8 +49,11 @@ struct Arrow
 
     void draw(RenderWindow *win)
     {
-        win->draw(line);
-        win->draw(triangle);
+        if (visible)
+        {
+            win->draw(line);
+            win->draw(triangle);
+        }
     }
 };
 
@@ -79,8 +87,10 @@ struct Label : public Arrow
 
 struct NodeObject
 {
+    int data;
     Text text;
-    Arrow pointer;
+    Arrow pointer1;
+    Arrow pointer2;
     CircleShape shape;
 
     NodeObject(Font &font)
@@ -98,9 +108,15 @@ struct NodeObject
         text.setFillColor(Color(255, 0, 255));
     }
 
-    void setText(string value)
+    void setData(int val)
     {
-        text.setString(value);
+        data = val;
+        setText();
+    }
+
+    void setText()
+    {
+        text.setString(to_string(data));
         Vector2f textSize = text.getGlobalBounds().getSize();
         text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
     }
@@ -111,10 +127,16 @@ struct NodeObject
         text.setPosition(pos.x, pos.y);
     }
 
-    void setArrow(Vector2f dst)
+    void setArrow1(Vector2f dst)
     {
         Vector2f src = shape.getPosition();
-        pointer.set(src, dst, 0.6f);
+        pointer1.set(src, dst, 0.6f);
+    }
+
+    void setArrow2(Vector2f dst)
+    {
+        Vector2f src = shape.getPosition();
+        pointer2.set(src, dst, 0.6f);
     }
 
     void setAllAlpha(int i)
@@ -137,10 +159,15 @@ struct NodeObject
 
     void draw(RenderWindow *win)
     {
-        pointer.draw(win);
+        pointer1.draw(win);
+        pointer2.draw(win);
         win->draw(shape);
         win->draw(text);
     }
+
+    bool operator>(NodeObject &obj) { return this->data > obj.data; }
+
+    bool operator<(NodeObject &obj) { return this->data < obj.data; }
 };
 
 struct BoxObject
@@ -229,25 +256,21 @@ struct Button : public BoxObject
 
     void draw(RenderWindow *win)
     {
-        if (!enabled)
-            return;
-
-        win->draw(box);
-        win->draw(text);
+        if (enabled)
+        {
+            win->draw(box);
+            win->draw(text);
+        }
     }
-
-    void enableButton() { enabled = true; }
-
-    void disableButton() { enabled = false; }
 
     void setHoverColor() { box.setOutlineColor(Color(0, 75, 0)); }
 
     void setNormalColor() { box.setOutlineColor(Color(0, 0, 75)); }
 };
 
-ostream &operator<<(ostream &out, NodeObject &obj)
+ostream &operator<<(ostream &out, NodeObject *obj)
 {
-    string s = obj.text.getString();
+    string s = obj->text.getString();
     return out << s;
 }
 

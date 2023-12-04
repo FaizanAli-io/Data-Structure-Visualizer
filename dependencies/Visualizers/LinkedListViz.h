@@ -6,8 +6,8 @@
 
 struct LinkedListVisualizer
 {
-    const float animationSpeed = 2.5;
     const float updateSpeed = 0.01;
+    const float animationSpeed = 3;
     const Vector2f NullSpot = Vector2f(1100, 1100);
 
     Font font;
@@ -37,12 +37,10 @@ struct LinkedListVisualizer
         b4 = new Button(font);
         b4->setText("Pop Head");
         b4->setPos(Vector2f(1200, 700));
-    }
 
-    void randomNodes(int n, int m = 1000)
-    {
+        int n = rand() % 10;
         for (int i = 0; i < n; i++)
-            append_node(rand() % m);
+            append_node(rand() % 1000);
     }
 
     Vector2f setPositionFromIndex(int i)
@@ -60,15 +58,15 @@ struct LinkedListVisualizer
     {
         NodeObject *obj = new NodeObject(font);
 
-        obj->setText(to_string(data));
+        obj->setData(data);
         obj->setPos(setPositionFromIndex(tail++));
-        obj->setArrow(NullSpot);
+        obj->setArrow1(NullSpot);
 
         if (!nodes->isEmpty())
         {
             NodeObject *lastNode = nodes->getTail()->data;
             if (lastNode != nullptr)
-                lastNode->setArrow(obj->shape.getPosition());
+                lastNode->setArrow1(obj->shape.getPosition());
         }
 
         nodes->append(obj);
@@ -79,9 +77,9 @@ struct LinkedListVisualizer
     {
         NodeObject *obj = new NodeObject(font);
 
-        obj->setText(to_string(data));
+        obj->setData(data);
         obj->setPos(setPositionFromIndex(head--));
-        obj->setArrow(nodes->getHead()->data->shape.getPosition());
+        obj->setArrow1(nodes->getHead()->data->shape.getPosition());
 
         nodes->prepend(obj);
         return obj;
@@ -130,7 +128,7 @@ struct LinkedListVisualizer
         tail--;
         nodes->removeTail();
         obj = nodes->getTail()->data;
-        obj->setArrow(NullSpot);
+        obj->setArrow1(NullSpot);
     }
 
     void del_head_viz()

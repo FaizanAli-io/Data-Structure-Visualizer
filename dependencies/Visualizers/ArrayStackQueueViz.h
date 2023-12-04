@@ -6,8 +6,8 @@
 
 struct StackQueueVisualizer
 {
-    const float animationSpeed = 5;
     const float updateSpeed = 0.01;
+    const float animationSpeed = 5;
 
     Font font;
     Clock clock;

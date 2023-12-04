@@ -7,10 +7,10 @@ struct LinkedQueueVisualizer : public LinkedListVisualizer
 {
     LinkedQueueVisualizer(RenderWindow *win) : LinkedListVisualizer(win)
     {
+        b1->enabled = false;
+        b2->enabled = false;
         b3->setText("Enqueue");
         b4->setText("Dequeue");
-        b1->disableButton();
-        b2->disableButton();
     }
 
     void buttonClicked(Vector2i mPos)
