@@ -87,11 +87,15 @@ struct Label : public Arrow
 
 struct NodeObject
 {
-    int data;
+    int nodeData;
+
     Text text;
     Arrow pointer1;
     Arrow pointer2;
     CircleShape shape;
+
+    Vector2f dir;
+    Vector2f nextPos;
 
     NodeObject(Font &font)
     {
@@ -110,13 +114,13 @@ struct NodeObject
 
     void setData(int val)
     {
-        data = val;
+        nodeData = val;
         setText();
     }
 
     void setText()
     {
-        text.setString(to_string(data));
+        text.setString(to_string(nodeData));
         Vector2f textSize = text.getGlobalBounds().getSize();
         text.setOrigin(textSize.x * 0.5, textSize.y * 0.75);
     }
@@ -127,16 +131,30 @@ struct NodeObject
         text.setPosition(pos.x, pos.y);
     }
 
-    void setArrow1(Vector2f dst)
+    void moveBody()
     {
-        Vector2f src = shape.getPosition();
-        pointer1.set(src, dst, 0.6f);
+        shape.move(dir.x, dir.y);
+        text.move(dir.x, dir.y);
     }
 
-    void setArrow2(Vector2f dst)
+    void setNextPos(Vector2f pos, int div)
+    {
+        dir = pos - shape.getPosition();
+        nextPos = pos;
+        dir.x /= div;
+        dir.y /= div;
+        pointer1.visible = false;
+        pointer2.visible = false;
+    }
+
+    void setArrow(Vector2f dst, int n, float factor = 0.6f)
     {
         Vector2f src = shape.getPosition();
-        pointer2.set(src, dst, 0.6f);
+
+        if (n == 1)
+            pointer1.set(src, dst, factor);
+        else if (n == 2)
+            pointer2.set(src, dst, factor);
     }
 
     void setAllAlpha(int i)
@@ -165,9 +183,9 @@ struct NodeObject
         win->draw(text);
     }
 
-    bool operator>(NodeObject &obj) { return this->data > obj.data; }
+    bool operator>(NodeObject &obj) { return this->nodeData > obj.nodeData; }
 
-    bool operator<(NodeObject &obj) { return this->data < obj.data; }
+    bool operator<(NodeObject &obj) { return this->nodeData < obj.nodeData; }
 };
 
 struct BoxObject

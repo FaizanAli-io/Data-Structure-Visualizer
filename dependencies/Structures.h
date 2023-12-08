@@ -112,6 +112,38 @@ struct LinkedList
         tail = newNode;
     }
 
+    void appendPriority(T data)
+    {
+        ListNode<T> *newNode = new ListNode<T>(data);
+
+        if (isEmpty())
+        {
+            head = newNode;
+            tail = newNode;
+        }
+
+        else
+        {
+            if (*(head->data) > *(data))
+            {
+                newNode->next = head;
+                head = newNode;
+            }
+
+            else
+            {
+                ListNode<T> *temp = head;
+                while (temp->next && *(temp->next->data) < *(data))
+                    temp = temp->next;
+                newNode->next = temp->next;
+                temp->next = newNode;
+            }
+
+            while (tail->next != nullptr)
+                tail = tail->next;
+        }
+    }
+
     void prepend(T data)
     {
         ListNode<T> *newNode = new ListNode<T>(data);
@@ -423,11 +455,6 @@ struct AVLTree
 
         cout << endl;
     }
-
-    void recursiveTreeDraw(TreeNode<T> *node, RenderWindow *win);
-
-    void recursivesetPosition(TreeNode<T> *node, RenderWindow *win,
-                              int x, int y, int dx, int dy);
 };
 
 #endif

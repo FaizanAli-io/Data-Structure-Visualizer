@@ -17,7 +17,7 @@ struct LinkedListVisualizer
     Button *b1, *b2, *b3, *b4;
     LinkedList<NodeObject *> *nodes;
 
-    LinkedListVisualizer(RenderWindow *win) : window(win), tail(0), head(-1)
+    LinkedListVisualizer(RenderWindow *win, bool initializeRand = true) : window(win), tail(0), head(-1)
     {
         font.loadFromFile("assets/fonts/font2.ttf");
         nodes = new LinkedList<NodeObject *>;
@@ -38,9 +38,12 @@ struct LinkedListVisualizer
         b4->setText("Pop Head");
         b4->setPos(Vector2f(1200, 700));
 
-        int n = rand() % 10;
-        for (int i = 0; i < n; i++)
-            append_node(rand() % 1000);
+        if (initializeRand)
+        {
+            int n = rand() % 10;
+            for (int i = 0; i < n; i++)
+                append_node(rand() % 1000);
+        }
     }
 
     Vector2f setPositionFromIndex(int i)
@@ -60,13 +63,13 @@ struct LinkedListVisualizer
 
         obj->setData(data);
         obj->setPos(setPositionFromIndex(tail++));
-        obj->setArrow1(NullSpot);
+        obj->setArrow(NullSpot, 1);
 
         if (!nodes->isEmpty())
         {
             NodeObject *lastNode = nodes->getTail()->data;
             if (lastNode != nullptr)
-                lastNode->setArrow1(obj->shape.getPosition());
+                lastNode->setArrow(obj->shape.getPosition(), 1);
         }
 
         nodes->append(obj);
@@ -79,7 +82,7 @@ struct LinkedListVisualizer
 
         obj->setData(data);
         obj->setPos(setPositionFromIndex(head--));
-        obj->setArrow1(nodes->getHead()->data->shape.getPosition());
+        obj->setArrow(nodes->getHead()->data->shape.getPosition(), 1);
 
         nodes->prepend(obj);
         return obj;
@@ -128,7 +131,7 @@ struct LinkedListVisualizer
         tail--;
         nodes->removeTail();
         obj = nodes->getTail()->data;
-        obj->setArrow1(NullSpot);
+        obj->setArrow(NullSpot, 1);
     }
 
     void del_head_viz()
