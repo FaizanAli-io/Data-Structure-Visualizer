@@ -3,6 +3,7 @@
 #include "Visualizers/LinkedQueueViz.h"
 #include "Visualizers/ArrayStackQueueViz.h"
 #include "Visualizers/AutoBalanceTreeViz.h"
+#include "Visualizers/HeapViz.h"
 
 Vector2i trueMousePos(RenderWindow *win)
 {
@@ -17,6 +18,8 @@ struct Visualizers
     LinkedQueueVisualizer *linkedqueue;
     StackQueueVisualizer *stackqueue;
     AutoBalanceTreeVisualizer *balancetree;
+    HeapVisualizer *minheap;
+    HeapVisualizer *maxheap;
 
     Visualizers(RenderWindow *window)
     {
@@ -26,6 +29,8 @@ struct Visualizers
         linkedqueue = new LinkedQueueVisualizer(window);
         stackqueue = new StackQueueVisualizer(window);
         balancetree = new AutoBalanceTreeVisualizer(window);
+        minheap = new HeapVisualizer(window, true);
+        maxheap = new HeapVisualizer(window, false);
     }
 
     void buttonHover(int mode, Vector2i pos)
@@ -48,7 +53,10 @@ struct Visualizers
             balancetree->buttonHover(pos);
             break;
         case 5:
-            cout << "HEAP" << endl;
+            minheap->buttonHover(pos);
+            break;
+        case 6:
+            maxheap->buttonHover(pos);
             break;
         default:
             break;
@@ -75,7 +83,10 @@ struct Visualizers
             balancetree->buttonClicked(pos);
             break;
         case 5:
-            cout << "HEAP" << endl;
+            minheap->buttonClicked(pos);
+            break;
+        case 6:
+            maxheap->buttonClicked(pos);
             break;
         default:
             break;
@@ -102,7 +113,10 @@ struct Visualizers
             balancetree->visualize();
             break;
         case 5:
-            cout << "HEAP" << endl;
+            minheap->visualize();
+            break;
+        case 6:
+            maxheap->visualize();
             break;
         default:
             break;

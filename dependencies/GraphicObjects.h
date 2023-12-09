@@ -3,6 +3,7 @@
 using namespace std;
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 using namespace sf;
 
 #include "Utilities.h"
