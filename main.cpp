@@ -3,6 +3,5 @@
 int main()
 {
 	MainMenu menu;
-
 	menu.run();
 }
