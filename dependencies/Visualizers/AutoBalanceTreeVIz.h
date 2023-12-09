@@ -14,27 +14,39 @@ struct AutoBalanceTreeVisualizer
     RenderWindow *window;
     Button *b1, *b2, *b3, *b4;
     AVLTree<NodeObject *> *tree;
+    NodeObject *lastVisited;
 
     AutoBalanceTreeVisualizer(RenderWindow *win) : window(win)
     {
         font.loadFromFile("assets/fonts/font2.ttf");
         tree = new AVLTree<NodeObject *>;
+        lastVisited = nullptr;
 
-        b1 = new Button(font);
+        b1 = new Button(font, 54);
         b1->setText("Insert Node");
         b1->setPos(Vector2f(1200, 25));
 
-        b2 = new Button(font);
+        b2 = new Button(font, 54);
         b2->setText("Delete Root");
         b2->setPos(Vector2f(1200, 250));
 
         b3 = new Button(font);
-        b3->setText("Traverse");
+        b3->setText("In Order");
         b3->setPos(Vector2f(1200, 475));
 
-        b4 = new Button(font);
-        b4->setText("Traverse Inorder");
+        b4 = new Button(font, 54);
+        b4->setText("Level Order");
         b4->setPos(Vector2f(1200, 700));
+    }
+
+    void time_delay()
+    {
+        clock.restart();
+
+        float delay = updateSpeed * 50;
+
+        while (clock.getElapsedTime() <= seconds(delay))
+            ;
     }
 
     void insert_node_viz(int data)
@@ -48,11 +60,69 @@ struct AutoBalanceTreeVisualizer
         movementLoop();
     }
 
-    void deleteRoot() { cout << "Deleting..." << endl; }
+    void deleteRoot()
+    {
+        tree->remove(tree->root->data);
 
-    void levelorderTraversal() { cout << "Traversing..." << endl; }
+        setNextPosition(tree->root, 600, 100, 300, 200);
 
-    void inorderTraversal() { cout << "Still Traversing..." << endl; }
+        movementLoop();
+    }
+
+    void inorderTraversal(TreeNode<NodeObject *> *node)
+    {
+        if (lastVisited != nullptr)
+            lastVisited->shape.setOutlineThickness(-4.f);
+
+        if (node != nullptr)
+        {
+            inorderTraversal(node->left);
+
+            node->data->shape.setOutlineColor(Color(0, 255, 0));
+            node->data->shape.setOutlineThickness(8.f);
+            lastVisited = node->data;
+            time_delay();
+
+            window->clear();
+            visualize();
+            window->display();
+
+            inorderTraversal(node->right);
+        }
+    }
+
+    void levelorderTraversal()
+    {
+        LinkedList<TreeNode<NodeObject *> *> nodes;
+
+        nodes.append(tree->root);
+
+        while (!nodes.isEmpty())
+        {
+            TreeNode<NodeObject *> *current = nodes.removeHead();
+
+            if (current->left)
+                nodes.append(current->left);
+
+            if (current->right)
+                nodes.append(current->right);
+
+            if (lastVisited != nullptr)
+                lastVisited->shape.setOutlineThickness(-4.f);
+
+            current->data->shape.setOutlineColor(Color(255, 0, 0));
+            current->data->shape.setOutlineThickness(8.f);
+            lastVisited = current->data;
+            time_delay();
+
+            window->clear();
+            visualize();
+            window->display();
+        }
+
+        if (lastVisited != nullptr)
+            lastVisited->shape.setOutlineThickness(-4.f);
+    }
 
     void buttonClicked(Vector2i mPos)
     {
@@ -63,10 +133,10 @@ struct AutoBalanceTreeVisualizer
             deleteRoot();
 
         else if (b3->isOverlap(mPos))
-            levelorderTraversal();
+            inorderTraversal(tree->root);
 
         else if (b4->isOverlap(mPos))
-            inorderTraversal();
+            levelorderTraversal();
     }
 
     void buttonHover(Vector2i mPos)

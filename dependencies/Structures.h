@@ -354,12 +354,11 @@ struct AVLTree
     {
         if (node == nullptr)
             return nullptr;
-        else if (data < node->data)
+        else if (*(node->data) > *(data))
             node->left = removeHelper(node->left, data);
-        else if (data > node->data)
+        else if (*(node->data) < *(data))
             node->right = removeHelper(node->right, data);
-
-        else if (data == node->data)
+        else
         {
             if (!(node->left) && !(node->right))
                 return nullptr;
@@ -383,6 +382,18 @@ struct AVLTree
     void insert(T data) { root = insertHelper(root, data); }
 
     void remove(T data) { root = removeHelper(root, data); }
+
+    T search(TreeNode<T> *node, int searchVal)
+    {
+        if (node == nullptr)
+            return nullptr;
+        else if (*(node->data) > searchVal)
+            return search(node->left, searchVal);
+        else if (*(node->data) < searchVal)
+            return search(node->right, searchVal);
+        else
+            return node->data;
+    }
 
     void inorder(TreeNode<T> *node = nullptr, int d = 0)
     {
@@ -443,12 +454,12 @@ struct AVLTree
 
         while (!nodes.isEmpty())
         {
-            TreeNode<T> *current = nodes.dequeue();
+            TreeNode<T> *current = nodes.removeHead();
 
             if (current->left)
-                nodes.enqueue(current->left);
+                nodes.append(current->left);
             if (current->right)
-                nodes.enqueue(current->right);
+                nodes.append(current->right);
 
             cout << current->data << ' ';
         }

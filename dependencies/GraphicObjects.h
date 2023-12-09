@@ -186,6 +186,10 @@ struct NodeObject
     bool operator>(NodeObject &obj) { return this->nodeData > obj.nodeData; }
 
     bool operator<(NodeObject &obj) { return this->nodeData < obj.nodeData; }
+
+    bool operator>(int value) { return this->nodeData > value; }
+
+    bool operator<(int value) { return this->nodeData < value; }
 };
 
 struct BoxObject
@@ -194,10 +198,10 @@ struct BoxObject
     Text text;
     RectangleShape box;
 
-    BoxObject(Font &font)
+    BoxObject(Font &font, int charSize = 64)
     {
         text.setFont(font);
-        text.setCharacterSize(64);
+        text.setCharacterSize(charSize);
         text.setFillColor(Color(255, 0, 255));
 
         w = 300, b = 80;
@@ -249,9 +253,9 @@ struct Button : public BoxObject
 {
     bool enabled;
 
-    Button(Font &font) : BoxObject(font), enabled(true)
+    Button(Font &font, int charSize = 72) : BoxObject(font), enabled(true)
     {
-        text.setCharacterSize(72);
+        text.setCharacterSize(charSize);
         text.setFillColor(Color(125, 0, 155));
 
         w = 350, b = 150;
