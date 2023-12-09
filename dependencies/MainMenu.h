@@ -9,6 +9,7 @@ class MainMenu
     int len;
 
     Font font;
+    Music music;
     Texture image;
     Sprite background;
     vector<Text> texts;
@@ -30,11 +31,13 @@ public:
             "Priority Queue",
             "Array Stack Queue",
             "Balanced Tree",
-            "Min Max Heap",
+            "Minimum Heap",
+            "Maximum Heap",
             "Quit Program",
         };
 
         image.loadFromFile("assets/images/background.jpg");
+        music.openFromFile("assets/sounds/music.wav");
         font.loadFromFile("assets/fonts/font3.ttf");
         background.setTexture(image);
 
@@ -73,6 +76,9 @@ public:
 
     void run()
     {
+        music.setLoop(true);
+        music.play();
+
         while (window->isOpen())
         {
             Event event;
@@ -97,7 +103,7 @@ public:
 
                 if (Keyboard::isKeyPressed(Keyboard::Enter))
                 {
-                    if (pos == 7)
+                    if (pos == 8)
                         window->close();
                     else
                         allVisualizers->showStructure(pos - 1);

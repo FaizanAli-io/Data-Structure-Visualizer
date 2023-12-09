@@ -1,9 +1,6 @@
 #include <iostream>
 using namespace std;
 
-#include <SFML/Graphics.hpp>
-using namespace sf;
-
 #ifndef STRUCTURES
 #define STRUCTURES
 
@@ -82,9 +79,10 @@ struct TreeNode
     T data;
     TreeNode<T> *left;
     TreeNode<T> *right;
+    TreeNode<T> *parent;
 
-    TreeNode(T data, TreeNode<T> *left = nullptr, TreeNode<T> *right = nullptr)
-        : data(data), left(left), right(right) {}
+    TreeNode(T data, TreeNode<T> *left = nullptr, TreeNode<T> *parent = nullptr)
+        : data(data), left(left), right(right), parent(parent) {}
 };
 
 template <typename T>
@@ -465,6 +463,152 @@ struct AVLTree
         }
 
         cout << endl;
+    }
+};
+
+template <typename T>
+struct Heap
+{
+public:
+    TreeNode<T> *root;
+    bool minheap;
+
+    Heap(bool min) : minheap(min) { root = nullptr; }
+
+    void swap(TreeNode<T> *a, TreeNode<T> *b)
+    {
+        T temp = a->data;
+        a->data = b->data;
+        b->data = temp;
+    }
+
+    void insert(T data)
+    {
+        TreeNode<T> *newnode = new TreeNode<T>(data);
+
+        if (root == nullptr)
+            root = newnode;
+
+        else
+        {
+            LinkedList<TreeNode<T> *> queue;
+
+            queue.append(root);
+
+            while (!queue.isEmpty())
+            {
+                TreeNode<T> *current = queue.removeHead();
+
+                if (current->left == nullptr)
+                {
+                    current->left = newnode;
+                    newnode->parent = current;
+                    break;
+                }
+
+                else if (current->right == nullptr)
+                {
+                    current->right = newnode;
+                    newnode->parent = current;
+                    break;
+                }
+
+                queue.append(current->left);
+                queue.append(current->right);
+            }
+        }
+
+        heapifyUp(newnode);
+    }
+
+    bool lessThan(TreeNode<T> *a, TreeNode<T> *b)
+    {
+        if (minheap)
+            return *(a->data) < *(b->data);
+        else
+            return *(a->data) > *(b->data);
+    }
+
+    bool moreThan(TreeNode<T> *a, TreeNode<T> *b)
+    {
+        if (minheap)
+            return *(a->data) > *(b->data);
+        else
+            return *(a->data) < *(b->data);
+    }
+
+    void heapifyUp(TreeNode<T> *node)
+    {
+        while (node->parent != nullptr && lessThan(node, node->parent))
+        {
+            swap(node, node->parent);
+            node = node->parent;
+        }
+    }
+
+    TreeNode<T> *findLastNode()
+    {
+        if (root == nullptr)
+            return nullptr;
+
+        LinkedList<TreeNode<T> *> queue;
+
+        queue.append(root);
+
+        TreeNode<T> *current;
+
+        while (!queue.isEmpty())
+        {
+            current = queue.removeHead();
+
+            if (current->left != nullptr)
+                queue.append(current->left);
+
+            if (current->right != nullptr)
+                queue.append(current->right);
+        }
+
+        return current;
+    }
+
+    void heapifyDown(TreeNode<T> *node)
+    {
+        while ((node->left != nullptr && moreThan(node, node->left)) ||
+               (node->right != nullptr && moreThan(node, node->right)))
+        {
+            if (node->right == nullptr || lessThan(node->left, node->right))
+            {
+                swap(node, node->left);
+                node = node->left;
+            }
+
+            else
+            {
+                swap(node, node->right);
+                node = node->right;
+            }
+        }
+    }
+
+    void removemin()
+    {
+        if (root == nullptr)
+            return;
+
+        TreeNode<T> *lastNode = findLastNode();
+
+        swap(root, lastNode);
+
+        if (lastNode->parent)
+        {
+            if (lastNode->parent->left == lastNode)
+                lastNode->parent->left = nullptr;
+
+            else if (lastNode->parent->right == lastNode)
+                lastNode->parent->right = nullptr;
+        }
+
+        heapifyDown(root);
     }
 };
 
