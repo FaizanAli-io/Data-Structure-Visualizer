@@ -43,7 +43,7 @@ struct AutoBalanceTreeVisualizer
     {
         clock.restart();
 
-        float delay = updateSpeed * 50;
+        float delay = updateSpeed * 40;
 
         while (clock.getElapsedTime() <= seconds(delay))
             ;
@@ -53,7 +53,16 @@ struct AutoBalanceTreeVisualizer
     {
         NodeObject *obj = new NodeObject(font);
         obj->setData(data);
+
         tree->insert(obj);
+
+        setNextPosition(tree->root, 600, 100, 300, 200);
+
+        movementLoop();
+
+        time_delay();
+
+        tree->root = tree->balanceTree(tree->root);
 
         setNextPosition(tree->root, 600, 100, 300, 200);
 

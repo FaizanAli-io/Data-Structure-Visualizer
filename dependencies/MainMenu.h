@@ -76,6 +76,7 @@ public:
 
     void run()
     {
+        music.setPitch(1.25);
         music.setLoop(true);
         music.play();
 
