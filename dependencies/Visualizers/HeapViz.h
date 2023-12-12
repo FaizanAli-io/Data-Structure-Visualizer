@@ -8,18 +8,19 @@ struct HeapVisualizer
 {
     const float updateSpeed = 0.01;
     const int animationFrames = 50;
+    bool minheap;
 
     Font font;
     Clock clock;
     RenderWindow *window;
-    Button *b1, *b2, *b3;
+    Button *b1, *b2, *b3, *b4;
     Heap<NodeObject *> *heap;
     NodeObject *lastVisited;
 
-    HeapVisualizer(RenderWindow *win, bool min) : window(win)
+    HeapVisualizer(RenderWindow *win, bool min) : window(win), minheap(min)
     {
         font.loadFromFile("assets/fonts/font2.ttf");
-        heap = new Heap<NodeObject *>(min);
+        heap = new Heap<NodeObject *>(minheap);
         lastVisited = nullptr;
 
         b1 = new Button(font, 54);
@@ -33,6 +34,10 @@ struct HeapVisualizer
         b3 = new Button(font, 54);
         b3->setText("Level Order");
         b3->setPos(Vector2f(1200, 475));
+
+        b4 = new Button(font, 54);
+        b4->setText("Switch");
+        b4->setPos(Vector2f(1200, 700));
     }
 
     void time_delay()
@@ -49,16 +54,33 @@ struct HeapVisualizer
     {
         NodeObject *obj = new NodeObject(font);
         obj->setData(data);
-        heap->insert(obj);
+
+        TreeNode<NodeObject *> *newnode = heap->insert(obj);
+
+        setNextPosition(heap->root, 600, 100, 300, 200);
+
+        movementLoop();
+
+        time_delay();
+
+        heap->heapifyUp(newnode);
 
         setNextPosition(heap->root, 600, 100, 300, 200);
 
         movementLoop();
     }
 
-    void deleteRoot()
+    void delete_root_viz()
     {
-        heap->removemin();
+        heap->removeRoot();
+
+        setNextPosition(heap->root, 600, 100, 300, 200);
+
+        movementLoop();
+
+        time_delay();
+
+        heap->heapifyDown(heap->root);
 
         setNextPosition(heap->root, 600, 100, 300, 200);
 
@@ -98,16 +120,49 @@ struct HeapVisualizer
             lastVisited->shape.setOutlineThickness(-4.f);
     }
 
+    void switchHeap()
+    {
+        LinkedList<TreeNode<NodeObject *> *> nodes;
+
+        minheap = !minheap;
+
+        Heap<NodeObject *> *newheap = new Heap<NodeObject *>(minheap);
+
+        nodes.append(heap->root);
+
+        while (!nodes.isEmpty())
+        {
+            TreeNode<NodeObject *> *current = nodes.removeHead();
+
+            if (current->left)
+                nodes.append(current->left);
+
+            if (current->right)
+                nodes.append(current->right);
+
+            newheap->insert(current->data);
+        }
+
+        heap = newheap;
+
+        setNextPosition(heap->root, 600, 100, 300, 200);
+
+        movementLoop();
+    }
+
     void buttonClicked(Vector2i mPos)
     {
         if (b1->isOverlap(mPos))
             insert_node_viz(rand() % 500);
 
         else if (b2->isOverlap(mPos))
-            deleteRoot();
+            delete_root_viz();
 
         else if (b3->isOverlap(mPos))
             levelorderTraversal();
+
+        else if (b4->isOverlap(mPos))
+            switchHeap();
     }
 
     void buttonHover(Vector2i mPos)
@@ -115,6 +170,7 @@ struct HeapVisualizer
         b1->setNormalColor();
         b2->setNormalColor();
         b3->setNormalColor();
+        b4->setNormalColor();
 
         if (b1->isOverlap(mPos))
             b1->setHoverColor();
@@ -124,6 +180,9 @@ struct HeapVisualizer
 
         else if (b3->isOverlap(mPos))
             b3->setHoverColor();
+
+        else if (b4->isOverlap(mPos))
+            b4->setHoverColor();
     }
 
     void setNextPosition(TreeNode<NodeObject *> *node, int x, int y, int dx, int dy)
@@ -205,6 +264,7 @@ struct HeapVisualizer
         b1->draw(window);
         b2->draw(window);
         b3->draw(window);
+        b4->draw(window);
     }
 };
 

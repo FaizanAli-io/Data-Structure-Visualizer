@@ -1,3 +1,4 @@
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -258,38 +259,23 @@ struct AVLTree
         return y;
     }
 
-    TreeNode<T> *balanceTree(TreeNode<T> *node, T data)
+    TreeNode<T> *balanceTree(TreeNode<T> *node)
     {
-        int balance = getBalance(node);
-
-        if (balance > 1)
+        if (node)
         {
-            if (*data < *(node->left->data))
-                node = rightRotate(node);
+            node = balanceHelper(node);
 
-            else
-            {
-                node->left = leftRotate(node->left);
-                node = rightRotate(node);
-            }
-        }
+            if (node->left)
+                node->left = balanceTree(node->left);
 
-        else if (balance < -1)
-        {
-            if (*data > *(node->right->data))
-                node = leftRotate(node);
-
-            else
-            {
-                node->right = rightRotate(node->right);
-                node = leftRotate(node);
-            }
+            if (node->right)
+                node->right = balanceTree(node->right);
         }
 
         return node;
     }
 
-    TreeNode<T> *balanceTree(TreeNode<T> *node)
+    TreeNode<T> *balanceHelper(TreeNode<T> *node)
     {
         int balance = getBalance(node);
 
@@ -319,6 +305,8 @@ struct AVLTree
         return node;
     }
 
+    void insert(T data) { root = insertHelper(root, data); }
+
     TreeNode<T> *insertHelper(TreeNode<T> *node, T data)
     {
         if (node == nullptr)
@@ -329,24 +317,11 @@ struct AVLTree
             node->right = insertHelper(node->right, data);
         else
             return node;
-        return balanceTree(node, data);
-    }
 
-    TreeNode<T> *nextNode(TreeNode<T> *node)
-    {
-        node = node->right;
-        while (node->left)
-            node = node->left;
         return node;
     }
 
-    TreeNode<T> *lastNode(TreeNode<T> *node)
-    {
-        node = node->left;
-        while (node->right)
-            node = node->right;
-        return node;
-    }
+    void remove(T data) { root = removeHelper(root, data); }
 
     TreeNode<T> *removeHelper(TreeNode<T> *node, T data)
     {
@@ -372,14 +347,26 @@ struct AVLTree
             }
         }
 
-        return balanceTree(node);
+        return balanceHelper(node);
+    }
+
+    TreeNode<T> *nextNode(TreeNode<T> *node)
+    {
+        node = node->right;
+        while (node->left)
+            node = node->left;
+        return node;
+    }
+
+    TreeNode<T> *lastNode(TreeNode<T> *node)
+    {
+        node = node->left;
+        while (node->right)
+            node = node->right;
+        return node;
     }
 
     AVLTree() : root(nullptr) {}
-
-    void insert(T data) { root = insertHelper(root, data); }
-
-    void remove(T data) { root = removeHelper(root, data); }
 
     T search(TreeNode<T> *node, int searchVal)
     {
@@ -482,7 +469,7 @@ public:
         b->data = temp;
     }
 
-    void insert(T data)
+    TreeNode<T> *insert(T data)
     {
         TreeNode<T> *newnode = new TreeNode<T>(data);
 
@@ -518,7 +505,7 @@ public:
             }
         }
 
-        heapifyUp(newnode);
+        return newnode;
     }
 
     bool lessThan(TreeNode<T> *a, TreeNode<T> *b)
@@ -590,7 +577,7 @@ public:
         }
     }
 
-    void removemin()
+    void removeRoot()
     {
         if (root == nullptr)
             return;
@@ -607,8 +594,6 @@ public:
             else if (lastNode->parent->right == lastNode)
                 lastNode->parent->right = nullptr;
         }
-
-        heapifyDown(root);
     }
 };
 
