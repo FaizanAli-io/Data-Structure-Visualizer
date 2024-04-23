@@ -31,7 +31,9 @@
 *.out
 *.app
 
-# Project Specific
-run/
-src/
+# VS Code
 .vscode/
+
+# Project Specific
+run/*
+src/*
