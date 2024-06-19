@@ -1,6 +1,6 @@
 # Data-Structure-Visualizer
 
-## Description
+## Description:
 
 The Data Structure Visualizer is an educational tool developed in C++ to aid in understanding complex data structures through visual representation. This project offers an intuitive interface for visualizing fundamental data structures such as arrays, linked lists, stacks, queues, binary trees, and graphs. By providing step-by-step visualizations of operations like insertion, deletion, and traversal, the tool helps users grasp the underlying mechanics of these structures. The visualizer is equipped with customizable options, allowing users to input different values and observe how the data structures evolve with each operation.
 
