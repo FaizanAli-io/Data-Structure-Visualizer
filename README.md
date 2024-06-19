@@ -7,11 +7,8 @@ The Data Structure Visualizer is an educational tool developed in C++ to aid in 
 Key features include:
 
     Interactive Visualizations: Users can interact with the visualizer to see real-time changes as they perform various operations.
-    
-    Algorithm Demonstration: The tool demonstrates common algorithms like sorting and searching, making it an excellent resource for students and educators.
-    
     User-friendly Interface: Designed with a focus on simplicity, the interface is easy to navigate, ensuring a smooth learning experience.
-    
+    Algorithm Demonstration: The tool demonstrates common algorithms like sorting and searching, making it an excellent resource for students and educators.
     Performance Analysis: Users can observe the performance implications of different data structures and algorithms, gaining insights into efficiency and optimization.
 
 This project is a comprehensive learning aid for anyone looking to deepen their understanding of data structures and their practical applications.
